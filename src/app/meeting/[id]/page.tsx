@@ -1,0 +1,440 @@
+"use client";
+
+import { Suspense, useEffect, useState, useCallback } from "react";
+import { useParams, useSearchParams } from "next/navigation";
+import {
+  IconCalendarEvent,
+  IconUsers,
+  IconClock,
+  IconCheck,
+  IconLoader2,
+} from "@tabler/icons-react";
+import type { Meeting, MeetingResponse, TimeSlot } from "@/lib/supabase/database.types";
+
+// 時間範圍 8:00 ~ 22:00
+const HOURS = Array.from({ length: 15 }, (_, i) => i + 8);
+
+export default function MeetingPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center">
+          <IconLoader2 className="h-8 w-8 text-[#5865f2] animate-spin" />
+        </div>
+      }
+    >
+      <MeetingContent />
+    </Suspense>
+  );
+}
+
+function MeetingContent() {
+  const params = useParams();
+  const searchParams = useSearchParams();
+  const meetingId = params.id as string;
+
+  // 從 OAuth2 callback 取得的使用者資訊
+  const discordId = searchParams.get("discord_id") ?? "";
+  const username = searchParams.get("username") ?? "";
+
+  const [meeting, setMeeting] = useState<Meeting | null>(null);
+  const [responses, setResponses] = useState<MeetingResponse[]>([]);
+  const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragMode, setDragMode] = useState<"add" | "remove">("add");
+
+  useEffect(() => {
+    async function fetchMeeting() {
+      try {
+        const res = await fetch(`/api/meetings/${meetingId}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        setMeeting(data.meeting);
+        setResponses(data.responses ?? []);
+
+        // 如果使用者已有回覆，載入已選擇的時段
+        if (discordId) {
+          const existing = data.responses?.find(
+            (r: MeetingResponse) => r.discord_id === discordId
+          );
+          if (existing) {
+            const slots = new Set<string>(
+              existing.available_slots.map(
+                (s: TimeSlot) => `${s.date}-${s.hour}`
+              )
+            );
+            setSelectedSlots(slots);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch meeting:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchMeeting();
+  }, [meetingId, discordId]);
+
+  const dates = meeting
+    ? getDatesInRange(meeting.date_range_start, meeting.date_range_end)
+    : [];
+
+  const toggleSlot = useCallback(
+    (date: string, hour: number) => {
+      const key = `${date}-${hour}`;
+      setSelectedSlots((prev) => {
+        const next = new Set(prev);
+        if (next.has(key)) {
+          next.delete(key);
+        } else {
+          next.add(key);
+        }
+        return next;
+      });
+      setSaved(false);
+    },
+    []
+  );
+
+  const handleMouseDown = useCallback(
+    (date: string, hour: number) => {
+      const key = `${date}-${hour}`;
+      setIsDragging(true);
+      setDragMode(selectedSlots.has(key) ? "remove" : "add");
+      toggleSlot(date, hour);
+    },
+    [selectedSlots, toggleSlot]
+  );
+
+  const handleMouseEnter = useCallback(
+    (date: string, hour: number) => {
+      if (!isDragging) return;
+      const key = `${date}-${hour}`;
+      setSelectedSlots((prev) => {
+        const next = new Set(prev);
+        if (dragMode === "add") {
+          next.add(key);
+        } else {
+          next.delete(key);
+        }
+        return next;
+      });
+      setSaved(false);
+    },
+    [isDragging, dragMode]
+  );
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  // Touch event handlers for mobile drag-to-select
+  const handleTouchStart = useCallback(
+    (date: string, hour: number) => {
+      const key = `${date}-${hour}`;
+      setIsDragging(true);
+      setDragMode(selectedSlots.has(key) ? "remove" : "add");
+      toggleSlot(date, hour);
+    },
+    [selectedSlots, toggleSlot]
+  );
+
+  const handleTouchMove = useCallback(
+    (e: React.TouchEvent) => {
+      if (!isDragging) return;
+      const touch = e.touches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      if (el && el instanceof HTMLElement) {
+        const cellDate = el.dataset.date;
+        const cellHour = el.dataset.hour;
+        if (cellDate && cellHour) {
+          const key = `${cellDate}-${cellHour}`;
+          setSelectedSlots((prev) => {
+            const next = new Set(prev);
+            if (dragMode === "add") {
+              next.add(key);
+            } else {
+              next.delete(key);
+            }
+            return next;
+          });
+          setSaved(false);
+        }
+      }
+    },
+    [isDragging, dragMode]
+  );
+
+  const handleTouchEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleSave = async () => {
+    if (!discordId || !username) {
+      alert("請先透過 Discord OAuth2 登入！");
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const available_slots: TimeSlot[] = Array.from(selectedSlots).map(
+        (key) => {
+          const lastDash = key.lastIndexOf("-");
+          const date = key.substring(0, lastDash);
+          const hour = parseInt(key.substring(lastDash + 1));
+          return { date, hour };
+        }
+      );
+
+      await fetch(`/api/meetings/${meetingId}/respond`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          discord_id: discordId,
+          username,
+          available_slots,
+        }),
+      });
+
+      setSaved(true);
+    } catch (err) {
+      console.error("Failed to save:", err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  // 計算每個時段有多少人可用
+  const slotCounts = new Map<string, number>();
+  responses.forEach((r) => {
+    r.available_slots.forEach((s) => {
+      const key = `${s.date}-${s.hour}`;
+      slotCounts.set(key, (slotCounts.get(key) ?? 0) + 1);
+    });
+  });
+  const maxCount = Math.max(1, ...slotCounts.values());
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <IconLoader2 className="h-8 w-8 text-[#5865f2] animate-spin" />
+      </div>
+    );
+  }
+
+  if (!meeting) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="glass-card p-8 text-center">
+          <h2 className="text-xl font-bold text-white mb-2">找不到會議</h2>
+          <p className="text-neutral-400">
+            此會議 ID 不存在或已被刪除。
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen p-4 sm:p-6 md:p-10" onMouseUp={handleMouseUp} onTouchEnd={handleTouchEnd}>
+      {/* Meeting Header */}
+      <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2 sm:gap-3">
+          <IconCalendarEvent className="h-5 w-5 sm:h-7 sm:w-7 text-[#5865f2] shrink-0" />
+          <span className="break-words">{meeting.name}</span>
+        </h1>
+        {meeting.description && (
+          <p className="text-neutral-400 mb-4">{meeting.description}</p>
+        )}
+        <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-400">
+          <span className="flex items-center gap-1.5">
+            <IconClock className="h-4 w-4" />
+            {meeting.date_range_start} ~ {meeting.date_range_end}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <IconUsers className="h-4 w-4" />
+            {responses.length} / {meeting.participants_count} 人已回覆
+          </span>
+          <span className="font-mono text-xs text-neutral-500">
+            {meeting.id}
+          </span>
+        </div>
+      </div>
+
+      {/* Login info */}
+      {discordId ? (
+        <div className="max-w-6xl mx-auto mb-6">
+          <div className="glass-card p-4 border-[#5865f2]/30 bg-[#5865f2]/10 flex items-center gap-3">
+            <IconCheck className="h-5 w-5 text-[#5865f2]" />
+            <span className="text-neutral-200 text-sm">
+              已登入為 <strong className="text-white">{username}</strong>
+              ，點選下方時段標記你的可用時間。
+            </span>
+          </div>
+        </div>
+      ) : (
+        <div className="max-w-6xl mx-auto mb-6">
+          <div className="glass-card p-4 border-amber-500/30 bg-amber-500/10 flex items-center gap-3">
+            <IconClock className="h-5 w-5 text-amber-400" />
+            <span className="text-neutral-200 text-sm">
+              你目前是以訪客身分瀏覽。如需填寫時段，請透過 Discord 指令中的按鈕登入。
+            </span>
+          </div>
+        </div>
+      )}
+
+      {/* When2Meet Grid */}
+      <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
+        <div className="glass-card p-3 sm:p-6 overflow-x-auto -mx-4 sm:mx-0 rounded-none sm:rounded-2xl">
+          <div
+            className="select-none min-w-fit"
+            style={{ userSelect: "none" }}
+            onTouchMove={handleTouchMove}
+          >
+            {/* Header row with dates */}
+            <div className="flex">
+              <div className="w-10 sm:w-16 shrink-0" /> {/* spacer for time labels */}
+              {dates.map((date) => (
+                <div
+                  key={date}
+                  className="flex-1 min-w-[40px] sm:min-w-[60px] text-center text-[10px] sm:text-xs font-medium text-neutral-400 pb-2"
+                >
+                  <div>{formatWeekday(date)}</div>
+                  <div className="text-neutral-500">{formatShortDate(date)}</div>
+                </div>
+              ))}
+            </div>
+
+            {/* Grid rows */}
+            {HOURS.map((hour) => (
+              <div key={hour} className="flex">
+                <div className="w-10 sm:w-16 shrink-0 text-right pr-1 sm:pr-3 text-[10px] sm:text-xs text-neutral-500 leading-[28px] sm:leading-[32px]">
+                  {hour.toString().padStart(2, "0")}:00
+                </div>
+                {dates.map((date) => {
+                  const key = `${date}-${hour}`;
+                  const isSelected = selectedSlots.has(key);
+                  const count = slotCounts.get(key) ?? 0;
+                  const heatOpacity = count > 0 ? 0.2 + (count / maxCount) * 0.6 : 0;
+
+                  return (
+                    <div
+                      key={key}
+                      data-date={date}
+                      data-hour={hour}
+                      className={`flex-1 min-w-[40px] sm:min-w-[60px] h-7 sm:h-8 time-grid-cell rounded-sm m-[1px] flex items-center justify-center text-[9px] sm:text-[10px] ${
+                        isSelected
+                          ? "selected text-white font-medium"
+                          : ""
+                      }`}
+                      style={
+                        !isSelected && count > 0
+                          ? {
+                              background: `rgba(0, 210, 106, ${heatOpacity})`,
+                              borderColor: `rgba(0, 210, 106, ${heatOpacity * 0.5})`,
+                            }
+                          : undefined
+                      }
+                      onMouseDown={() => handleMouseDown(date, hour)}
+                      onMouseEnter={() => handleMouseEnter(date, hour)}
+                      onTouchStart={(e) => {
+                        e.preventDefault();
+                        handleTouchStart(date, hour);
+                      }}
+                    >
+                      {count > 0 && !isSelected && (
+                        <span className="text-emerald-300/70">{count}</span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Legend & Save */}
+      <div className="max-w-6xl mx-auto flex flex-col gap-4">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-[10px] sm:text-xs text-neutral-400">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-[#5865f2]/70 border border-[#5865f2]/40" />
+            <span>你的選擇</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-emerald-500/40 border border-emerald-500/20" />
+            <span>其他人可用</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm border border-white/5 bg-white/[0.02]" />
+            <span>無人選擇</span>
+          </div>
+        </div>
+
+        {discordId && (
+          <button
+            onClick={handleSave}
+            disabled={saving}
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] disabled:opacity-50 text-white font-semibold transition-all hover:scale-[1.02]"
+          >
+            {saving ? (
+              <IconLoader2 className="h-4 w-4 animate-spin" />
+            ) : saved ? (
+              <IconCheck className="h-4 w-4" />
+            ) : null}
+            {saving ? "儲存中..." : saved ? "已儲存" : "儲存可用時段"}
+          </button>
+        )}
+      </div>
+
+      {/* Responses summary */}
+      {responses.length > 0 && (
+        <div className="max-w-6xl mx-auto mt-8">
+          <h3 className="text-lg font-semibold text-white mb-3">
+            已回覆的成員 ({responses.length})
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {responses.map((r) => (
+              <div
+                key={r.id}
+                className="glass-card px-3 py-1.5 text-sm text-neutral-300"
+              >
+                {r.username}
+                <span className="ml-2 text-xs text-neutral-500">
+                  {r.available_slots.length} 個時段
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/** 取得日期範圍內的所有日期 */
+function getDatesInRange(start: string, end: string): string[] {
+  const dates: string[] = [];
+  const current = new Date(start);
+  const endDate = new Date(end);
+
+  while (current <= endDate) {
+    dates.push(current.toISOString().split("T")[0]);
+    current.setDate(current.getDate() + 1);
+  }
+
+  return dates;
+}
+
+function formatWeekday(dateStr: string): string {
+  const days = ["日", "一", "二", "三", "四", "五", "六"];
+  return days[new Date(dateStr).getDay()];
+}
+
+function formatShortDate(dateStr: string): string {
+  const d = new Date(dateStr);
+  return `${d.getMonth() + 1}/${d.getDate()}`;
+}
