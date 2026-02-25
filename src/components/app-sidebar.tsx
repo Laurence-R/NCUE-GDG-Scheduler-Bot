@@ -111,7 +111,7 @@ const LogoIcon = () => {
   return (
     <Link
       href="/"
-      className="relative z-20 flex items-center py-1"
+      className="relative z-20 flex items-center justify-center py-1"
     >
       <div className="h-6 w-6 shrink-0 rounded-md bg-[#5865f2] flex items-center justify-center">
         <IconCalendarEvent className="h-4 w-4 text-white" />
