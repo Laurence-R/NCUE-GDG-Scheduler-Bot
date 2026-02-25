@@ -176,19 +176,19 @@ function MeetingCard({
 }) {
   return (
     <div
-      className={`glass-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
-        past ? "opacity-60" : ""
+      className={`glass-card meeting-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+        past ? "opacity-70" : ""
       }`}
     >
       <div>
-        <h3 className="text-white font-semibold mb-1">{meeting.name}</h3>
-        <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-400">
+        <h3 className="text-white font-semibold text-base mb-1">{meeting.name}</h3>
+        <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-300">
           <span className="flex items-center gap-1">
-            <IconCalendarEvent className="h-3.5 w-3.5" />
+            <IconCalendarEvent className="h-3.5 w-3.5 text-[#5865f2]" />
             {meeting.date_range_start} ~ {meeting.date_range_end}
           </span>
-          <span className="flex items-center gap-1"><IconUsers className="h-3.5 w-3.5" /> {meeting.participants_count} 人</span>
-          <span className="text-neutral-500 font-mono text-xs">
+          <span className="flex items-center gap-1"><IconUsers className="h-3.5 w-3.5 text-[#5865f2]" /> {meeting.participants_count} 人</span>
+          <span className="text-neutral-400 font-mono text-xs">
             {meeting.id}
           </span>
         </div>

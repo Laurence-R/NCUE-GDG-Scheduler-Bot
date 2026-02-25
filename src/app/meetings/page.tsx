@@ -84,13 +84,13 @@ export default function MeetingsPage() {
                 <Link
                   key={meeting.id}
                   href={`/meeting/${meeting.id}`}
-                  className={`glass-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 block ${
-                    !isActive ? "opacity-50" : ""
+                  className={`glass-card meeting-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 block ${
+                    !isActive ? "opacity-60" : ""
                   }`}
                 >
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-white font-semibold">
+                      <h3 className="text-white font-semibold text-base">
                         {meeting.name}
                       </h3>
                       {isActive && (
@@ -99,17 +99,17 @@ export default function MeetingsPage() {
                         </span>
                       )}
                     </div>
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-400">
+                    <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-300">
                       <span className="flex items-center gap-1">
-                        <IconCalendarEvent className="h-3.5 w-3.5" />
+                        <IconCalendarEvent className="h-3.5 w-3.5 text-[#5865f2]" />
                         {meeting.date_range_start} ~{" "}
                         {meeting.date_range_end}
                       </span>
-                      <span className="flex items-center gap-1"><IconUsers className="h-3.5 w-3.5" /> {meeting.participants_count} 人</span>
-                      <span className="flex items-center gap-1"><IconUser className="h-3.5 w-3.5" /> {meeting.creator_username}</span>
+                      <span className="flex items-center gap-1"><IconUsers className="h-3.5 w-3.5 text-[#5865f2]" /> {meeting.participants_count} 人</span>
+                      <span className="flex items-center gap-1"><IconUser className="h-3.5 w-3.5 text-[#5865f2]" /> {meeting.creator_username}</span>
                     </div>
                   </div>
-                  <IconExternalLink className="h-5 w-5 text-neutral-500 shrink-0" />
+                  <IconExternalLink className="h-5 w-5 text-neutral-400 shrink-0" />
                 </Link>
               );
             })}
