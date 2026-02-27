@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { UserProvider } from "@/contexts/user-context";
 import { ThemeProvider } from "@/contexts/theme-context";
@@ -36,7 +37,7 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
+        className={cn(geistSans.variable, geistMono.variable, "antialiased bg-background text-foreground")}
       >
         <ThemeProvider>
           <UserProvider>
