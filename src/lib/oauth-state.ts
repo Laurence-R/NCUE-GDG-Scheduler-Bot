@@ -6,6 +6,8 @@
  * 不需要 session/cookie 儲存——完全 stateless。
  */
 
+import { timingSafeEqual } from "node:crypto";
+
 const STATE_TTL_MS = 10 * 60 * 1000; // state 有效期 10 分鐘
 
 function getSecret(): string {
@@ -83,9 +85,13 @@ export async function verifySignedState(
   const encoded = state.substring(0, dotIndex);
   const signature = state.substring(dotIndex + 1);
 
-  // 驗證簽章
+  // 驗證簽章（constant-time comparison 防止 timing attack）
   const expected = await hmacSign(encoded);
-  if (signature !== expected) return null;
+  const sigBuf = Buffer.from(signature, "hex");
+  const expBuf = Buffer.from(expected, "hex");
+  if (sigBuf.length !== expBuf.length || !timingSafeEqual(sigBuf, expBuf)) {
+    return null;
+  }
 
   // 解析 payload
   try {

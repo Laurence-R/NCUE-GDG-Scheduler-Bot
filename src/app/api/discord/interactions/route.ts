@@ -244,10 +244,28 @@ async function handleModalSubmit(interaction: Record<string, unknown>) {
   const userId = user?.user?.id ?? "unknown";
   const creatorUsername = user?.user?.global_name || user?.user?.username || "unknown";
 
-  // 解析日期範圍
+  // 驗證並解析日期範圍（格式: YYYY-MM-DD ~ YYYY-MM-DD）
+  const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
   const dateParts = dateRange.split("~").map((s: string) => s.trim());
-  const dateStart = dateParts[0] || dateRange;
-  const dateEnd = dateParts[1] || dateParts[0] || dateRange;
+  const dateStart = dateParts[0] || "";
+  const dateEnd = dateParts[1] || dateParts[0] || "";
+
+  if (
+    !DATE_RE.test(dateStart) ||
+    !DATE_RE.test(dateEnd) ||
+    isNaN(Date.parse(dateStart)) ||
+    isNaN(Date.parse(dateEnd)) ||
+    dateStart > dateEnd
+  ) {
+    return NextResponse.json({
+      type: 4,
+      data: {
+        content:
+          "❌ 日期範圍格式錯誤，請使用 `YYYY-MM-DD ~ YYYY-MM-DD`（例如 2025-01-20 ~ 2025-01-25）",
+        flags: 64,
+      },
+    });
+  }
 
   // 將會議資料儲存到 Supabase
   try {

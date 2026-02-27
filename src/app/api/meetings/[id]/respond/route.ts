@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { getSessionUser } from "@/lib/auth";
 import type { MeetingResponseInsert } from "@/lib/supabase/database.types";
 
 /**
  * POST /api/meetings/[id]/respond — 提交或更新可用時段
+ * 身分從 server-side session cookie 取得，防止偽造
  */
 export async function POST(
   request: NextRequest,
@@ -11,13 +13,22 @@ export async function POST(
 ) {
   const { id: meetingId } = await params;
 
+  // 從 httpOnly cookie 取得登入使用者，不信任 request body
+  const sessionUser = await getSessionUser();
+  if (!sessionUser) {
+    return NextResponse.json(
+      { error: "請先登入 Discord" },
+      { status: 401 }
+    );
+  }
+
   try {
     const body = await request.json();
-    const { discord_id, username, avatar_hash, available_slots } = body;
+    const { available_slots } = body;
 
-    if (!discord_id || !username || !Array.isArray(available_slots)) {
+    if (!Array.isArray(available_slots)) {
       return NextResponse.json(
-        { error: "缺少必要欄位（discord_id, username, available_slots）" },
+        { error: "缺少必要欄位（available_slots）" },
         { status: 400 }
       );
     }
@@ -39,9 +50,9 @@ export async function POST(
     // Upsert 回覆（同一使用者只能有一筆）
     const upsertData: MeetingResponseInsert = {
       meeting_id: meetingId,
-      discord_id,
-      username,
-      avatar_hash: avatar_hash ?? null,
+      discord_id: sessionUser.id,
+      username: sessionUser.username,
+      avatar_hash: sessionUser.avatar ?? null,
       available_slots,
     };
 

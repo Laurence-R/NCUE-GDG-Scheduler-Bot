@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { useParams, useSearchParams } from "next/navigation";
+import { useParams } from "next/navigation";
 import { IconLoader2 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import { useUser } from "@/contexts/user-context";
@@ -20,15 +20,13 @@ import { ToastNotification } from "./toast-notification";
 
 export function MeetingContent() {
   const params = useParams();
-  const searchParams = useSearchParams();
   const meetingId = params.id as string;
-  const { user } = useUser();
+  const { user, loading: userLoading } = useUser();
 
-  // 優先從 URL params 取得（OAuth2 callback 剛回來），否則從 cookie session 取得
-  const discordId = searchParams.get("discord_id") ?? user?.id ?? "";
-  const username = searchParams.get("username") ?? user?.username ?? "";
-  const avatarUrl = searchParams.get("avatar") ?? user?.avatar_url ?? "";
-  const avatarHash = user?.avatar ?? null;
+  // 身分統一從 UserContext 取得（server-side session cookie → /api/auth/me）
+  const discordId = user?.id ?? "";
+  const username = user?.username ?? "";
+  const avatarUrl = user?.avatar_url ?? "";
 
   const { meeting, responses, setResponses, selectedSlots, setSelectedSlots, loading } =
     useMeetingData(meetingId, discordId);
@@ -84,15 +82,11 @@ export function MeetingContent() {
         }
       );
 
+      // 身分由 server-side session 自動取得，只需送時段資料
       const res = await fetch(`/api/meetings/${meetingId}/respond`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          discord_id: discordId,
-          username,
-          avatar_hash: avatarHash,
-          available_slots,
-        }),
+        body: JSON.stringify({ available_slots }),
       });
 
       if (!res.ok) {

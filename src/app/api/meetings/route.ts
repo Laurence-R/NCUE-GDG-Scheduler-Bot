@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { requireSession } from "@/lib/auth";
 import type { MeetingInsert } from "@/lib/supabase/database.types";
 
 /**
- * GET /api/meetings — 取得所有會議列表
+ * GET /api/meetings — 取得所有會議列表（需登入）
  */
 export async function GET(request: NextRequest) {
+  // 要求登入，未登入回傳 401
+  const result = await requireSession();
+  if (result instanceof NextResponse) return result;
+
   const searchParams = request.nextUrl.searchParams;
   const discordId = searchParams.get("discord_id");
 

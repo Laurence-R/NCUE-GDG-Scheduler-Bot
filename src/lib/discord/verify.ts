@@ -6,18 +6,14 @@
  */
 
 import nacl from "tweetnacl";
+import { env } from "@/lib/env";
 
 export function verifyKey(
   body: string,
   signature: string,
   timestamp: string
 ): boolean {
-  const publicKey = process.env.DISCORD_PUBLIC_KEY;
-
-  if (!publicKey) {
-    console.error("❌ 缺少 DISCORD_PUBLIC_KEY 環境變數");
-    return false;
-  }
+  const publicKey = env.DISCORD_PUBLIC_KEY;
 
   try {
     return nacl.sign.detached.verify(

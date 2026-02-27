@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import { setSessionUser, getAvatarUrl } from "@/lib/auth";
+import { setSessionUser } from "@/lib/auth";
 import { verifySignedState } from "@/lib/oauth-state";
+import { env } from "@/lib/env";
 
 /**
  * Discord OAuth2 Callback
@@ -34,7 +35,7 @@ export async function GET(request: NextRequest) {
   }
 
   const redirectTarget = statePayload.redirect;
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = env.NEXT_PUBLIC_APP_URL;
 
   try {
     // 用 authorization code 交換 access token
@@ -46,9 +47,9 @@ export async function GET(request: NextRequest) {
       body: new URLSearchParams({
         grant_type: "authorization_code",
         code,
-        redirect_uri: process.env.DISCORD_REDIRECT_URI!,
-        client_id: process.env.DISCORD_APP_ID!,
-        client_secret: process.env.DISCORD_CLIENT_SECRET!,
+        redirect_uri: env.DISCORD_REDIRECT_URI,
+        client_id: env.DISCORD_APP_ID,
+        client_secret: env.DISCORD_CLIENT_SECRET,
       }),
     });
 
@@ -87,20 +88,17 @@ export async function GET(request: NextRequest) {
     // 將使用者資訊寫入 Cookie（7 天有效）
     await setSessionUser({ id: discordId, username, avatar: avatarHash });
 
-    // 構建帶有使用者資訊的重新導向 URL
-    const avatarUrl = getAvatarUrl(discordId, avatarHash);
-    const userParams = `discord_id=${discordId}&username=${encodeURIComponent(username)}&avatar=${encodeURIComponent(avatarUrl)}`;
-
     // 依照 state payload 中的 redirect 決定導向目標
+    // 使用者資訊已寫入 httpOnly cookie，不再透過 URL 傳遞（避免洩漏）
     if (redirectTarget.startsWith("MTG-")) {
       return NextResponse.redirect(
-        `${appUrl}/meeting/${redirectTarget}?${userParams}`
+        `${appUrl}/meeting/${redirectTarget}`
       );
     }
 
     // 預設導向儀表板
     return NextResponse.redirect(
-      `${appUrl}/dashboard?login=success&${userParams}`
+      `${appUrl}/dashboard?login=success`
     );
   } catch (error) {
     console.error("OAuth2 callback 錯誤：", error);

@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 // Re-export for backward compatibility (server-side consumers)
 export { getAvatarUrl } from "./avatar";
@@ -33,7 +34,7 @@ export async function getSessionUser(): Promise<DiscordUser | null> {
 export async function setSessionUser(user: DiscordUser): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set("discord_user", JSON.stringify(user), {
-    httpOnly: false, // Client 端也需要讀取
+    httpOnly: true, // 只允許 Server 端讀取，防止 XSS 竊取 session
     secure: process.env.NODE_ENV === "production",
     sameSite: "lax",
     path: "/",
@@ -47,4 +48,23 @@ export async function setSessionUser(user: DiscordUser): Promise<void> {
 export async function clearSessionUser(): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.delete("discord_user");
+}
+
+/**
+ * 要求已登入的 session，否則回傳 401 NextResponse。
+ *
+ * @example
+ *   const result = await requireSession();
+ *   if (result instanceof NextResponse) return result;
+ *   const user = result; // DiscordUser
+ */
+export async function requireSession(): Promise<DiscordUser | NextResponse> {
+  const user = await getSessionUser();
+  if (!user) {
+    return NextResponse.json(
+      { error: "請先登入 Discord" },
+      { status: 401 }
+    );
+  }
+  return user;
 }
