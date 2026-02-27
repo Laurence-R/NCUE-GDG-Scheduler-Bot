@@ -67,21 +67,28 @@ export async function handleModalSubmit(
   }
 
   // 將會議資料儲存到 Supabase
-  try {
-    await supabase.from("meetings").insert({
-      id: meetingId,
-      name: meetingName,
-      description,
-      participants_count: parseInt(participants) || 0,
-      date_range_start: dateStart,
-      date_range_end: dateEnd,
-      creator_discord_id: userId,
-      creator_username: creatorUsername,
-      guild_id: (interaction.guild_id as string) || null,
-      channel_id: (interaction.channel_id as string) || null,
-    } satisfies MeetingInsert);
-  } catch (err) {
-    console.error("儲存會議到 Supabase 失敗：", err);
+  const { error: insertError } = await supabase.from("meetings").insert({
+    id: meetingId,
+    name: meetingName,
+    description,
+    participants_count: parseInt(participants) || 0,
+    date_range_start: dateStart,
+    date_range_end: dateEnd,
+    creator_discord_id: userId,
+    creator_username: creatorUsername,
+    guild_id: (interaction.guild_id as string) || null,
+    channel_id: (interaction.channel_id as string) || null,
+  } satisfies MeetingInsert);
+
+  if (insertError) {
+    console.error("儲存會議到 Supabase 失敗：", insertError);
+    return NextResponse.json({
+      type: 4,
+      data: {
+        content: `❌ 建立會議失敗：${insertError.message}`,
+        flags: 64, // ephemeral
+      },
+    });
   }
 
   // 建立 OAuth2 URL，讓使用者登入後導向會議頁面
