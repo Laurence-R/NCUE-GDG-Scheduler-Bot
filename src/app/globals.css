@@ -232,8 +232,8 @@ body {
 }
 
 .time-grid-cell.selected {
-  background: var(--grid-selected-bg);
-  border-color: var(--grid-selected-border);
+  box-shadow: inset 0 0 0 2px var(--accent);
+  border-color: var(--accent);
 }
 
 /* Scrollbar styling */

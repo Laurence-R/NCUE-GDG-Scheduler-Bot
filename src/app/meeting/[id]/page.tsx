@@ -369,23 +369,27 @@ function MeetingContent() {
                   const key = `${date}-${hour}`;
                   const isSelected = selectedSlots.has(key);
                   const count = slotCounts.get(key) ?? 0;
-                  const heatOpacity = count > 0 ? 0.2 + (count / maxCount) * 0.6 : 0;
+                  // 自己選的時段也要算進熱力圖（未儲存前先 +1）
+                  const displayCount = isSelected && !responses.some(r => r.discord_id === discordId && r.available_slots.some(s => s.date === date && s.hour === hour))
+                    ? count + 1
+                    : count;
+                  const heatOpacity = displayCount > 0 ? 0.2 + (displayCount / Math.max(1, maxCount)) * 0.6 : 0;
 
                   return (
                     <div
                       key={key}
                       data-date={date}
                       data-hour={hour}
-                      className={`flex-1 min-w-[40px] sm:min-w-[60px] h-7 sm:h-8 time-grid-cell rounded-sm m-[1px] flex items-center justify-center text-[9px] sm:text-[10px] ${
-                        isSelected
-                          ? "selected text-white font-medium"
-                          : ""
+                      className={`flex-1 min-w-[40px] sm:min-w-[60px] h-7 sm:h-8 time-grid-cell rounded-sm m-[1px] flex items-center justify-center text-[9px] sm:text-[10px] relative overflow-hidden ${
+                        isSelected ? "selected" : ""
                       }`}
                       style={
-                        !isSelected && count > 0
+                        displayCount > 0
                           ? {
                               background: `rgba(var(--grid-heat-color), ${heatOpacity})`,
-                              borderColor: `rgba(var(--grid-heat-color), ${heatOpacity * 0.5})`,
+                              borderColor: isSelected
+                                ? `var(--accent)`
+                                : `rgba(var(--grid-heat-color), ${heatOpacity * 0.5})`,
                             }
                           : undefined
                       }
@@ -396,9 +400,21 @@ function MeetingContent() {
                         handleTouchStart(date, hour);
                       }}
                     >
-                      {count > 0 && !isSelected && (
+                      {isSelected && avatarUrl ? (
+                        <Image
+                          src={avatarUrl}
+                          alt="me"
+                          width={18}
+                          height={18}
+                          className="rounded-full shrink-0 pointer-events-none ring-1 ring-white/50"
+                          style={{ width: 16, height: 16 }}
+                          unoptimized
+                        />
+                      ) : isSelected ? (
+                        <span className="text-white font-bold text-[9px] pointer-events-none">✓</span>
+                      ) : count > 0 ? (
                         <span style={{ color: "var(--heat-text)" }}>{count}</span>
-                      )}
+                      ) : null}
                     </div>
                   );
                 })}
@@ -412,7 +428,13 @@ function MeetingContent() {
       <div className="max-w-6xl mx-auto flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-[10px] sm:text-xs" style={{ color: "var(--text-muted)" }}>
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm" style={{ background: "var(--grid-selected-bg)", border: "1px solid var(--accent-border-subtle)" }} />
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm flex items-center justify-center" style={{ background: "rgba(var(--grid-heat-color), 0.3)", boxShadow: "inset 0 0 0 1.5px var(--accent)", border: "1px solid var(--accent)" }}>
+              {avatarUrl ? (
+                <Image src={avatarUrl} alt="me" width={10} height={10} className="rounded-full" style={{ width: 8, height: 8 }} unoptimized />
+              ) : (
+                <span className="text-white text-[6px]">✓</span>
+              )}
+            </div>
             <span>你的選擇</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
