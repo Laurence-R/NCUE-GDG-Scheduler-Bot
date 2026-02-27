@@ -9,6 +9,9 @@ import {
   IconExternalLink,
   IconCheck,
   IconLoader2,
+  IconPlus,
+  IconBrandDiscord,
+  IconArrowRight,
 } from "@tabler/icons-react";
 import type { Meeting } from "@/lib/supabase/database.types";
 
@@ -59,7 +62,7 @@ function DashboardContent() {
     <div className="min-h-screen p-4 sm:p-6 md:p-10">
       {/* Login success banner */}
       {loginSuccess && (
-        <div className="max-w-4xl mx-auto mb-6">
+        <div className="max-w-3xl mx-auto mb-6">
           <div
             className="glass-card p-4 flex items-center gap-3"
             style={{ borderColor: "var(--success-border)", background: "var(--success-bg)" }}
@@ -72,78 +75,81 @@ function DashboardContent() {
         </div>
       )}
 
-      {/* Header */}
-      <div className="max-w-4xl mx-auto mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>儀表板</h1>
-        <p style={{ color: "var(--text-muted)" }}>
-          管理你的會議排程，查看歷史紀錄。
+      {/* Header — 精簡 */}
+      <div className="max-w-3xl mx-auto mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-1" style={{ color: "var(--text-primary)" }}>
+          儀表板
+        </h1>
+        <p className="text-sm" style={{ color: "var(--text-faint)" }}>
+          共 {meetings.length} 場會議 · {currentMeetings.length} 場進行中
         </p>
       </div>
 
-      {/* Stats Cards */}
-      <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-        <div className="glass-card p-5">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--accent-bg-medium)" }}>
-              <IconCalendarEvent className="h-4 w-4 text-[#5865f2]" />
-            </div>
-            <span className="text-sm" style={{ color: "var(--text-muted)" }}>進行中會議</span>
-          </div>
-          <span className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
+      {/* Stats — 水平指標列 */}
+      <div className="max-w-3xl mx-auto grid grid-cols-3 gap-3 mb-8">
+        <div className="glass-card p-4 text-center cursor-pointer">
+          <span className="text-2xl font-bold" style={{ color: "var(--accent)" }}>
             {currentMeetings.length}
           </span>
+          <p className="text-xs mt-1" style={{ color: "var(--text-faint)" }}>進行中</p>
         </div>
-
-        <div className="glass-card p-5">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--success-bg-medium)" }}>
-              <IconUsers className="h-4 w-4" style={{ color: "var(--success-text)" }} />
-            </div>
-            <span className="text-sm" style={{ color: "var(--text-muted)" }}>總會議數</span>
-          </div>
+        <div className="glass-card p-4 text-center cursor-pointer">
           <span className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
             {meetings.length}
           </span>
+          <p className="text-xs mt-1" style={{ color: "var(--text-faint)" }}>總會議</p>
         </div>
-
-        <div className="glass-card p-5">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--warning-bg-medium)" }}>
-              <IconClock className="h-4 w-4" style={{ color: "var(--warning-text)" }} />
-            </div>
-            <span className="text-sm" style={{ color: "var(--text-muted)" }}>已結束</span>
-          </div>
-          <span className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
+        <div className="glass-card p-4 text-center cursor-pointer">
+          <span className="text-2xl font-bold" style={{ color: "var(--text-muted)" }}>
             {pastMeetings.length}
           </span>
+          <p className="text-xs mt-1" style={{ color: "var(--text-faint)" }}>已結束</p>
         </div>
       </div>
 
       {/* Current Meetings */}
-      <div className="max-w-4xl mx-auto mb-8">
-        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
-          <IconCalendarEvent className="h-5 w-5 text-[#5865f2]" />
-          進行中的會議
-        </h2>
+      <div className="max-w-3xl mx-auto mb-10">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold uppercase tracking-widest" style={{ color: "var(--text-faint)" }}>
+            進行中
+          </h2>
+          <span className="text-xs tabular-nums" style={{ color: "var(--text-faint)" }}>
+            {currentMeetings.length} 場
+          </span>
+        </div>
 
         {loading ? (
-          <div className="glass-card p-8 text-center" style={{ color: "var(--text-muted)" }}>
-            載入中...
+          <div className="space-y-3">
+            {[1, 2].map((i) => (
+              <div
+                key={i}
+                className="glass-card p-5 animate-pulse"
+              >
+                <div className="h-4 rounded w-1/3 mb-3" style={{ background: "var(--surface-hover)" }} />
+                <div className="h-3 rounded w-2/3" style={{ background: "var(--surface-hover)" }} />
+              </div>
+            ))}
           </div>
         ) : currentMeetings.length === 0 ? (
-          <div className="glass-card p-8 text-center">
-            <p className="mb-4" style={{ color: "var(--text-muted)" }}>
-              目前沒有進行中的會議。
+          <div className="glass-card p-8 sm:p-10 text-center">
+            <div
+              className="w-12 h-12 rounded-xl flex items-center justify-center mx-auto mb-4"
+              style={{ background: "var(--surface-hover)" }}
+            >
+              <IconPlus className="h-5 w-5" style={{ color: "var(--text-faint)" }} />
+            </div>
+            <p className="font-medium mb-2" style={{ color: "var(--text-primary)" }}>
+              還沒有進行中的會議
             </p>
-            <p className="text-sm" style={{ color: "var(--text-faint)" }}>
-              在 Discord 中使用{" "}
+            <p className="text-sm mb-5 max-w-xs mx-auto" style={{ color: "var(--text-muted)" }}>
+              在 Discord 頻道中使用{" "}
               <code
                 className="px-1.5 py-0.5 rounded text-xs font-mono"
                 style={{ background: "var(--code-bg)", color: "var(--code-text)" }}
               >
                 /scheduler meeting
               </code>{" "}
-              來建立新的會議排程。
+              建立第一場。
             </p>
           </div>
         ) : (
@@ -157,11 +163,15 @@ function DashboardContent() {
 
       {/* Past Meetings */}
       {pastMeetings.length > 0 && (
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
-            <IconClock className="h-5 w-5" style={{ color: "var(--text-muted)" }} />
-            歷史會議
-          </h2>
+        <div className="max-w-3xl mx-auto">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold uppercase tracking-widest" style={{ color: "var(--text-faint)" }}>
+              已結束
+            </h2>
+            <span className="text-xs tabular-nums" style={{ color: "var(--text-faint)" }}>
+              {pastMeetings.length} 場
+            </span>
+          </div>
           <div className="space-y-3">
             {pastMeetings.map((meeting) => (
               <MeetingCard key={meeting.id} meeting={meeting} past />
@@ -180,34 +190,55 @@ function MeetingCard({
   meeting: Meeting;
   past?: boolean;
 }) {
+  const daysLeft = Math.ceil(
+    (new Date(meeting.date_range_end).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
+  );
+
   return (
-    <div
-      className={`glass-card meeting-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
-        past ? "opacity-70" : ""
+    <a
+      href={`/meeting/${meeting.id}`}
+      className={`group glass-card meeting-card p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 cursor-pointer ${
+        past ? "opacity-60" : ""
       }`}
     >
-      <div>
-        <h3 className="font-semibold text-base mb-1" style={{ color: "var(--text-primary)" }}>{meeting.name}</h3>
-        <div className="flex flex-wrap items-center gap-3 text-sm" style={{ color: "var(--text-secondary)" }}>
-          <span className="flex items-center gap-1">
-            <IconCalendarEvent className="h-3.5 w-3.5 text-[#5865f2]" />
+      <div className="min-w-0">
+        <div className="flex items-center gap-2 mb-1.5">
+          <h3 className="font-semibold text-base truncate" style={{ color: "var(--text-primary)" }}>
+            {meeting.name}
+          </h3>
+          {!past && daysLeft <= 2 && (
+            <span
+              className="shrink-0 px-2 py-0.5 text-[10px] font-medium rounded-full"
+              style={{
+                background: daysLeft <= 0 ? "var(--danger-bg)" : "var(--warning-bg)",
+                color: daysLeft <= 0 ? "var(--danger-text)" : "var(--warning-text)",
+                border: `1px solid ${daysLeft <= 0 ? "var(--danger-border)" : "var(--warning-border)"}`,
+              }}
+            >
+              {daysLeft <= 0 ? "今日截止" : `剩 ${daysLeft} 天`}
+            </span>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm" style={{ color: "var(--text-muted)" }}>
+          <span className="flex items-center gap-1.5">
+            <IconCalendarEvent className="h-3.5 w-3.5 shrink-0" />
             {meeting.date_range_start} ~ {meeting.date_range_end}
           </span>
-          <span className="flex items-center gap-1"><IconUsers className="h-3.5 w-3.5 text-[#5865f2]" /> {meeting.participants_count} 人</span>
-          <span className="font-mono text-xs" style={{ color: "var(--text-faint)" }}>
-            {meeting.id}
+          <span className="flex items-center gap-1.5">
+            <IconUsers className="h-3.5 w-3.5 shrink-0" />
+            {meeting.participants_count} 人
           </span>
         </div>
       </div>
       {!past && (
-        <a
-          href={`/meeting/${meeting.id}`}
-          className="shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#5865f2] hover:bg-[#4752c4] text-white text-sm font-medium transition-colors"
+        <div
+          className="shrink-0 flex items-center gap-1.5 text-sm font-medium transition-colors duration-200"
+          style={{ color: "var(--accent)" }}
         >
-          <IconExternalLink className="h-4 w-4" />
           開啟
-        </a>
+          <IconArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+        </div>
       )}
-    </div>
+    </a>
   );
 }
