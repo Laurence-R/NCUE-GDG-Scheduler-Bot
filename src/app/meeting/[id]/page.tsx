@@ -245,15 +245,18 @@ function MeetingContent() {
     }
   };
 
-  // 計算每個時段有多少人可用
+  // 計算每個時段有多少「其他人」可用（排除自己的舊回覆）
   const slotCounts = new Map<string, number>();
   responses.forEach((r) => {
+    if (r.discord_id === discordId) return; // 排除自己，改由 selectedSlots 即時計算
     r.available_slots.forEach((s) => {
       const key = `${s.date}-${s.hour}`;
       slotCounts.set(key, (slotCounts.get(key) ?? 0) + 1);
     });
   });
-  const maxCount = Math.max(1, ...slotCounts.values());
+  // maxCount 需包含自己可能的 +1
+  const othersMax = slotCounts.size > 0 ? Math.max(...slotCounts.values()) : 0;
+  const maxCount = Math.max(1, othersMax + (discordId ? 1 : 0));
 
   if (loading) {
     return (
@@ -368,12 +371,10 @@ function MeetingContent() {
                 {dates.map((date) => {
                   const key = `${date}-${hour}`;
                   const isSelected = selectedSlots.has(key);
-                  const count = slotCounts.get(key) ?? 0;
-                  // 自己選的時段也要算進熱力圖（未儲存前先 +1）
-                  const displayCount = isSelected && !responses.some(r => r.discord_id === discordId && r.available_slots.some(s => s.date === date && s.hour === hour))
-                    ? count + 1
-                    : count;
-                  const heatOpacity = displayCount > 0 ? 0.2 + (displayCount / Math.max(1, maxCount)) * 0.6 : 0;
+                  const othersCount = slotCounts.get(key) ?? 0;
+                  // 自己的選擇即時反映：選了就 +1，取消就不加
+                  const displayCount = othersCount + (isSelected ? 1 : 0);
+                  const heatOpacity = displayCount > 0 ? 0.2 + (displayCount / maxCount) * 0.6 : 0;
 
                   return (
                     <div
@@ -412,8 +413,8 @@ function MeetingContent() {
                         />
                       ) : isSelected ? (
                         <span className="text-white font-bold text-[9px] pointer-events-none">✓</span>
-                      ) : count > 0 ? (
-                        <span style={{ color: "var(--heat-text)" }}>{count}</span>
+                      ) : othersCount > 0 ? (
+                        <span style={{ color: "var(--heat-text)" }}>{othersCount}</span>
                       ) : null}
                     </div>
                   );
