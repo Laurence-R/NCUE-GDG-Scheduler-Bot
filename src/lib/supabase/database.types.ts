@@ -23,6 +23,7 @@
  *   meeting_id TEXT NOT NULL REFERENCES meetings(id) ON DELETE CASCADE,
  *   discord_id TEXT NOT NULL,
  *   username TEXT NOT NULL,
+ *   avatar_hash TEXT,
  *   available_slots JSONB NOT NULL DEFAULT '[]',
  *   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
  *   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -85,6 +86,7 @@ export type Database = {
           meeting_id: string;
           discord_id: string;
           username: string;
+          avatar_hash: string | null;
           available_slots: TimeSlot[];
           created_at: string;
           updated_at: string;
@@ -94,6 +96,7 @@ export type Database = {
           meeting_id: string;
           discord_id: string;
           username: string;
+          avatar_hash?: string | null;
           available_slots?: Json;
           created_at?: string;
           updated_at?: string;
@@ -102,6 +105,7 @@ export type Database = {
           meeting_id?: string;
           discord_id?: string;
           username?: string;
+          avatar_hash?: string | null;
           available_slots?: Json;
           updated_at?: string;
         };

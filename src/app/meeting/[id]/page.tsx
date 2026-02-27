@@ -2,6 +2,7 @@
 
 import { Suspense, useEffect, useState, useCallback } from "react";
 import { useParams, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import {
   IconCalendarEvent,
   IconUsers,
@@ -10,6 +11,7 @@ import {
   IconLoader2,
 } from "@tabler/icons-react";
 import type { Meeting, MeetingResponse, TimeSlot } from "@/lib/supabase/database.types";
+import { useUser } from "@/contexts/user-context";
 
 // 時間範圍 8:00 ~ 22:00
 const HOURS = Array.from({ length: 15 }, (_, i) => i + 8);
@@ -32,10 +34,13 @@ function MeetingContent() {
   const params = useParams();
   const searchParams = useSearchParams();
   const meetingId = params.id as string;
+  const { user } = useUser();
 
-  // 從 OAuth2 callback 取得的使用者資訊
-  const discordId = searchParams.get("discord_id") ?? "";
-  const username = searchParams.get("username") ?? "";
+  // 優先從 URL params 取得（OAuth2 callback 剛回來），否則從 cookie session 取得
+  const discordId = searchParams.get("discord_id") ?? user?.id ?? "";
+  const username = searchParams.get("username") ?? user?.username ?? "";
+  const avatarUrl = searchParams.get("avatar") ?? user?.avatar_url ?? "";
+  const avatarHash = user?.avatar ?? null;
 
   const [meeting, setMeeting] = useState<Meeting | null>(null);
   const [responses, setResponses] = useState<MeetingResponse[]>([]);
@@ -195,6 +200,7 @@ function MeetingContent() {
         body: JSON.stringify({
           discord_id: discordId,
           username,
+          avatar_hash: avatarHash,
           available_slots,
         }),
       });
@@ -268,7 +274,18 @@ function MeetingContent() {
       {discordId ? (
         <div className="max-w-6xl mx-auto mb-6">
           <div className="glass-card p-4 border-[#5865f2]/30 bg-[#5865f2]/10 flex items-center gap-3">
-            <IconCheck className="h-5 w-5 text-[#5865f2]" />
+            {avatarUrl ? (
+              <Image
+                src={avatarUrl}
+                alt={username}
+                width={24}
+                height={24}
+                className="rounded-full shrink-0 ring-2 ring-[#5865f2]/40"
+                unoptimized
+              />
+            ) : (
+              <IconCheck className="h-5 w-5 text-[#5865f2]" />
+            )}
             <span className="text-neutral-200 text-sm">
               已登入為 <strong className="text-white">{username}</strong>
               ，點選下方時段標記你的可用時間。
@@ -397,22 +414,43 @@ function MeetingContent() {
             已回覆的成員 ({responses.length})
           </h3>
           <div className="flex flex-wrap gap-2">
-            {responses.map((r) => (
-              <div
-                key={r.id}
-                className="glass-card px-3 py-1.5 text-sm text-neutral-300"
-              >
-                {r.username}
-                <span className="ml-2 text-xs text-neutral-500">
-                  {r.available_slots.length} 個時段
-                </span>
-              </div>
-            ))}
+            {responses.map((r) => {
+              const respAvatarUrl = getResponseAvatarUrl(r.discord_id, r.avatar_hash);
+              return (
+                <div
+                  key={r.id}
+                  className="glass-card px-3 py-1.5 text-sm text-neutral-300 flex items-center gap-2"
+                >
+                  <Image
+                    src={respAvatarUrl}
+                    alt={r.username}
+                    width={22}
+                    height={22}
+                    className="rounded-full shrink-0"
+                    unoptimized
+                  />
+                  <span>{r.username}</span>
+                  <span className="text-xs text-neutral-500">
+                    {r.available_slots.length} 個時段
+                  </span>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
     </div>
   );
+}
+
+/** 從 discord_id 和 avatar_hash 產生頭像 URL */
+function getResponseAvatarUrl(discordId: string, avatarHash: string | null | undefined): string {
+  if (avatarHash) {
+    const ext = avatarHash.startsWith("a_") ? "gif" : "png";
+    return `https://cdn.discordapp.com/avatars/${discordId}/${avatarHash}.${ext}`;
+  }
+  const index = Number(BigInt(discordId) >> BigInt(22)) % 6;
+  return `https://cdn.discordapp.com/embed/avatars/${index}.png`;
 }
 
 /** 取得日期範圍內的所有日期 */

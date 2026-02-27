@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { setSessionUser, getAvatarUrl } from "@/lib/auth";
 
 /**
  * Discord OAuth2 Callback
@@ -9,7 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
  *
  * 依照 state 參數決定重新導向的目標：
  * - state="dashboard" → /dashboard
- * - state=meetingId  → /meeting/{meetingId}?discord_id=xxx&username=xxx
+ * - state=meetingId  → /meeting/{meetingId}
  */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -69,26 +70,34 @@ export async function GET(request: NextRequest) {
     const userData = await userResponse.json();
     const discordId = userData.id;
     const username = userData.global_name || userData.username;
+    const avatarHash: string | null = userData.avatar ?? null;
 
-    console.log(`✅ 使用者已授權：${username} (${discordId})`);
+    console.log(`✅ 使用者已授權：${username} (${discordId}), avatar: ${avatarHash}`);
+
+    // 將使用者資訊寫入 Cookie（7 天有效）
+    await setSessionUser({ id: discordId, username, avatar: avatarHash });
+
+    // 構建帶有使用者資訊的重新導向 URL
+    const avatarUrl = getAvatarUrl(discordId, avatarHash);
+    const userParams = `discord_id=${discordId}&username=${encodeURIComponent(username)}&avatar=${encodeURIComponent(avatarUrl)}`;
 
     // 依照 state 決定重新導向
     if (state === "dashboard") {
       return NextResponse.redirect(
-        `${appUrl}/dashboard?login=success&discord_id=${discordId}&username=${encodeURIComponent(username)}`
+        `${appUrl}/dashboard?login=success&${userParams}`
       );
     }
 
     // state 可能是 meetingId，導向到會議頁面
     if (state && state.startsWith("MTG-")) {
       return NextResponse.redirect(
-        `${appUrl}/meeting/${state}?discord_id=${discordId}&username=${encodeURIComponent(username)}`
+        `${appUrl}/meeting/${state}?${userParams}`
       );
     }
 
     // 預設導向儀表板
     return NextResponse.redirect(
-      `${appUrl}/dashboard?login=success&discord_id=${discordId}&username=${encodeURIComponent(username)}`
+      `${appUrl}/dashboard?login=success&${userParams}`
     );
   } catch (error) {
     console.error("OAuth2 callback 錯誤：", error);

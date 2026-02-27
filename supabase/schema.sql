@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS meeting_responses (
   meeting_id TEXT NOT NULL REFERENCES meetings(id) ON DELETE CASCADE,
   discord_id TEXT NOT NULL,
   username TEXT NOT NULL,
+  avatar_hash TEXT,
   available_slots JSONB NOT NULL DEFAULT '[]',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

@@ -13,7 +13,7 @@ export async function POST(
 
   try {
     const body = await request.json();
-    const { discord_id, username, available_slots } = body;
+    const { discord_id, username, avatar_hash, available_slots } = body;
 
     if (!discord_id || !username || !Array.isArray(available_slots)) {
       return NextResponse.json(
@@ -41,6 +41,7 @@ export async function POST(
       meeting_id: meetingId,
       discord_id,
       username,
+      avatar_hash: avatar_hash ?? null,
       available_slots,
     };
 

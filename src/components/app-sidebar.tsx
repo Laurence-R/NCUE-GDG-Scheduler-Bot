@@ -11,11 +11,15 @@ import {
   IconCalendarEvent,
   IconLayoutDashboard,
   IconHome,
-  IconBrandDiscord,
+  IconLogin,
+  IconLogout,
   IconSettings,
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import Link from "next/link";
+import Image from "next/image";
+import { useUser } from "@/contexts/user-context";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const NAV_LINKS = [
   {
@@ -64,17 +68,9 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             </nav>
           </div>
 
-          {/* Bottom: Discord link */}
+          {/* Bottom: User status */}
           <div>
-            <SidebarLink
-              link={{
-                label: "Discord 頻道",
-                href: "#",
-                icon: (
-                  <IconBrandDiscord className="h-5 w-5 shrink-0 text-[#5865f2]" />
-                ),
-              }}
-            />
+            <UserStatus />
           </div>
         </SidebarBody>
       </Sidebar>
@@ -119,3 +115,87 @@ const LogoIcon = () => {
     </Link>
   );
 };
+
+/** 側邊欄底部：使用者登入狀態 */
+function UserStatus() {
+  const { user, loading, logout } = useUser();
+  const { open, animate } = useSidebar();
+  const showLabel = animate ? open : true;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-2">
+        <div className="h-8 w-8 rounded-full bg-white/10 animate-pulse" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <a
+        href="/api/auth/discord"
+        className={`flex items-center gap-2 py-2 rounded-lg transition-colors text-neutral-400 hover:text-white hover:bg-white/5 ${
+          !showLabel ? "justify-center px-0" : "justify-start px-2"
+        }`}
+      >
+        <IconLogin className="h-5 w-5 shrink-0 text-[#5865f2]" />
+        {showLabel && (
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-sm whitespace-pre"
+          >
+            登入 Discord
+          </motion.span>
+        )}
+      </a>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      {/* User info */}
+      <div
+        className={`flex items-center gap-2 py-2 rounded-lg ${
+          !showLabel ? "justify-center px-0" : "justify-start px-2"
+        }`}
+      >
+        <Image
+          src={user.avatar_url}
+          alt={user.username}
+          width={28}
+          height={28}
+          className="rounded-full shrink-0 ring-2 ring-[#5865f2]/40"
+          unoptimized
+        />
+        {showLabel && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col min-w-0"
+          >
+            <span className="text-sm font-medium text-white truncate">
+              {user.username}
+            </span>
+            <span className="text-[10px] text-neutral-500 truncate">
+              已連結 Discord
+            </span>
+          </motion.div>
+        )}
+      </div>
+
+      {/* Logout button */}
+      {showLabel && (
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          onClick={logout}
+          className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-neutral-500 hover:text-red-400 hover:bg-red-500/10 transition-colors text-xs cursor-pointer"
+        >
+          <IconLogout className="h-4 w-4 shrink-0" />
+          登出
+        </motion.button>
+      )}
+    </div>
+  );
+}
