@@ -10,12 +10,7 @@ export const GlassCard = ({
 }: React.HTMLAttributes<HTMLDivElement>) => {
   return (
     <div
-      className={cn(
-        "rounded-xl border border-white/10 bg-white/5 backdrop-blur-xl p-6",
-        "shadow-[0_0_15px_rgba(0,0,0,0.1)]",
-        "transition-all duration-300 hover:border-white/20 hover:bg-white/[0.07]",
-        className
-      )}
+      className={cn("glass-card p-6", className)}
       {...props}
     >
       {children}
@@ -45,7 +40,10 @@ export const GlassCardTitle = ({
   className?: string;
 }) => {
   return (
-    <h3 className={cn("text-lg font-semibold text-white", className)}>
+    <h3
+      className={cn("text-lg font-semibold", className)}
+      style={{ color: "var(--text-primary)" }}
+    >
       {children}
     </h3>
   );
@@ -59,7 +57,10 @@ export const GlassCardContent = ({
   className?: string;
 }) => {
   return (
-    <div className={cn("text-neutral-400", className)}>
+    <div
+      className={cn(className)}
+      style={{ color: "var(--text-muted)" }}
+    >
       {children}
     </div>
   );

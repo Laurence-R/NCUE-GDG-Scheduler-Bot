@@ -28,22 +28,22 @@ const NAV_LINKS = [
   {
     label: "首頁",
     href: "/",
-    icon: <IconHome className="h-5 w-5 shrink-0" style={{ color: "var(--text-muted)" }} />,
+    icon: <IconHome className="h-5 w-5 shrink-0" />,
   },
   {
     label: "儀表板",
     href: "/dashboard",
-    icon: <IconLayoutDashboard className="h-5 w-5 shrink-0" style={{ color: "var(--text-muted)" }} />,
+    icon: <IconLayoutDashboard className="h-5 w-5 shrink-0" />,
   },
   {
     label: "會議排程",
     href: "/meetings",
-    icon: <IconCalendarEvent className="h-5 w-5 shrink-0" style={{ color: "var(--text-muted)" }} />,
+    icon: <IconCalendarEvent className="h-5 w-5 shrink-0" />,
   },
   {
     label: "設定",
     href: "/settings",
-    icon: <IconSettings className="h-5 w-5 shrink-0" style={{ color: "var(--text-muted)" }} />,
+    icon: <IconSettings className="h-5 w-5 shrink-0" />,
   },
 ];
 
@@ -52,7 +52,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full overflow-hidden" style={{ background: "var(--background)" }}>
+    <div className="flex flex-col md:flex-row h-screen w-full overflow-hidden">
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
@@ -94,8 +94,8 @@ const Logo = () => {
       className="relative z-20 flex items-center gap-2 py-1 text-sm font-medium"
       style={{ color: "var(--text-primary)" }}
     >
-      <div className="h-6 w-6 shrink-0 rounded-md bg-[#5865f2] flex items-center justify-center">
-        <IconCalendarEvent className="h-4 w-4 text-white" />
+      <div className="h-6 w-6 shrink-0 rounded-md bg-accent flex items-center justify-center">
+        <IconCalendarEvent className="h-4 w-4 text-accent-foreground" />
       </div>
       <motion.span
         initial={{ opacity: 0 }}
@@ -114,8 +114,8 @@ const LogoIcon = () => {
       href="/"
       className="relative z-20 flex items-center justify-center py-1"
     >
-      <div className="h-6 w-6 shrink-0 rounded-md bg-[#5865f2] flex items-center justify-center">
-        <IconCalendarEvent className="h-4 w-4 text-white" />
+      <div className="h-6 w-6 shrink-0 rounded-md bg-accent flex items-center justify-center">
+        <IconCalendarEvent className="h-4 w-4 text-accent-foreground" />
       </div>
     </Link>
   );
@@ -172,7 +172,7 @@ function UserStatus() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-2">
-        <div className="h-8 w-8 rounded-full animate-pulse" style={{ background: "var(--surface-hover)" }} />
+        <div className="h-8 w-8 rounded-full animate-pulse" />
       </div>
     );
   }
@@ -194,7 +194,7 @@ function UserStatus() {
           e.currentTarget.style.background = "transparent";
         }}
       >
-        <IconLogin className="h-5 w-5 shrink-0 text-[#5865f2]" />
+        <IconLogin className="h-5 w-5 shrink-0 text-accent" />
         {showLabel && (
           <motion.span
             initial={{ opacity: 0 }}

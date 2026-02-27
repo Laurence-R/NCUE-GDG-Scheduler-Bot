@@ -20,7 +20,7 @@ export default function Home() {
             className="w-10 h-10 rounded-xl flex items-center justify-center"
             style={{ background: "var(--accent-bg-medium)" }}
           >
-            <IconBrandDiscord className="h-5 w-5 text-[#5865f2]" />
+            <IconBrandDiscord className="h-5 w-5 text-accent" />
           </div>
           <span className="text-sm font-medium" style={{ color: "var(--text-faint)" }}>
             GDG on Campus — NCUE
@@ -33,7 +33,7 @@ export default function Home() {
         >
           找到大家都有空的
           <br />
-          <span className="text-[#5865f2]">那個時間。</span>
+          <span className="text-accent">那個時間。</span>
         </h1>
 
         <p
@@ -47,7 +47,7 @@ export default function Home() {
         <div className="flex flex-col sm:flex-row gap-3">
           <Link
             href="/dashboard"
-            className="group flex items-center justify-center gap-2 bg-[#5865f2] hover:bg-[#4752c4] text-white font-semibold py-3 px-7 rounded-xl transition-all duration-200 cursor-pointer"
+            className="group flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover text-accent-foreground font-semibold py-3 px-7 rounded-xl transition-all duration-200 cursor-pointer"
           >
             開啟儀表板
             <IconArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
@@ -57,32 +57,48 @@ export default function Home() {
             className="flex items-center justify-center gap-2 glass-card px-7 py-3 font-semibold transition-all duration-200 cursor-pointer"
             style={{ color: "var(--text-primary)", borderRadius: "0.75rem" }}
           >
-            <IconBrandDiscord className="h-5 w-5 text-[#5865f2]" />
+            <IconBrandDiscord className="h-5 w-5 text-accent" />
             以 Discord 登入
           </Link>
         </div>
       </section>
 
-      {/* 怎麼用 — 三步驟，用指令面板模擬風格 */}
+      {/* 怎麼用 — 三步驟 Timeline */}
       <section className="max-w-3xl mx-auto mb-14 sm:mb-20">
         <h2
-          className="text-xs font-semibold uppercase tracking-widest mb-6"
+          className="text-xs font-semibold uppercase tracking-widest mb-8"
           style={{ color: "var(--text-faint)" }}
         >
           三步完成
         </h2>
 
-        <div className="grid gap-3">
+        <div className="relative pl-8 sm:pl-10">
+          {/* 時間線主軸 */}
+          <div
+            className="absolute left-[15px] sm:left-[19px] top-0 bottom-0 w-px"
+            style={{ background: "var(--border)" }}
+          />
+
           {/* Step 1 */}
-          <div className="glass-card p-5 sm:p-6 flex gap-4 items-start cursor-pointer">
+          <div className="relative pb-10">
+            {/* 節點圓點 */}
             <div
-              className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center mt-0.5"
-              style={{ background: "var(--accent-bg-medium)" }}
+              className="absolute -left-8 sm:-left-10 top-1 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center"
+              style={{
+                background: "var(--accent-bg-medium)",
+                boxShadow: "0 0 0 4px var(--background)",
+              }}
             >
-              <IconTerminal2 className="h-4 w-4 text-[#5865f2]" />
+              <IconTerminal2 className="h-4 w-4 text-accent" />
             </div>
-            <div>
-              <h3 className="font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+            <div className="pt-0.5">
+              <span
+                className="text-[10px] font-bold uppercase tracking-widest"
+                style={{ color: "var(--accent)" }}
+              >
+                Step 1
+              </span>
+              <h3 className="font-semibold mt-1 mb-1.5" style={{ color: "var(--text-primary)" }}>
                 在 Discord 輸入指令
               </h3>
               <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
@@ -99,15 +115,24 @@ export default function Home() {
           </div>
 
           {/* Step 2 */}
-          <div className="glass-card p-5 sm:p-6 flex gap-4 items-start cursor-pointer">
+          <div className="relative pb-10">
             <div
-              className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center mt-0.5"
-              style={{ background: "var(--success-bg-medium)" }}
+              className="absolute -left-8 sm:-left-10 top-1 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center"
+              style={{
+                background: "var(--success-bg-medium)",
+                boxShadow: "0 0 0 4px var(--background)",
+              }}
             >
               <IconMouse className="h-4 w-4" style={{ color: "var(--success-text)" }} />
             </div>
-            <div>
-              <h3 className="font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+            <div className="pt-0.5">
+              <span
+                className="text-[10px] font-bold uppercase tracking-widest"
+                style={{ color: "var(--success-text)" }}
+              >
+                Step 2
+              </span>
+              <h3 className="font-semibold mt-1 mb-1.5" style={{ color: "var(--text-primary)" }}>
                 每人各自勾選時段
               </h3>
               <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
@@ -118,15 +143,24 @@ export default function Home() {
           </div>
 
           {/* Step 3 */}
-          <div className="glass-card p-5 sm:p-6 flex gap-4 items-start cursor-pointer">
+          <div className="relative pb-2">
             <div
-              className="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center mt-0.5"
-              style={{ background: "var(--warning-bg-medium)" }}
+              className="absolute -left-8 sm:-left-10 top-1 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center"
+              style={{
+                background: "var(--warning-bg-medium)",
+                boxShadow: "0 0 0 4px var(--background)",
+              }}
             >
               <IconChartBar className="h-4 w-4" style={{ color: "var(--warning-text)" }} />
             </div>
-            <div>
-              <h3 className="font-semibold mb-1" style={{ color: "var(--text-primary)" }}>
+            <div className="pt-0.5">
+              <span
+                className="text-[10px] font-bold uppercase tracking-widest"
+                style={{ color: "var(--warning-text)" }}
+              >
+                Step 3
+              </span>
+              <h3 className="font-semibold mt-1 mb-1.5" style={{ color: "var(--text-primary)" }}>
                 查看熱力圖結果
               </h3>
               <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>

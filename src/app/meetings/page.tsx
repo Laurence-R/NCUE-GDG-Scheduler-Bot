@@ -44,7 +44,7 @@ export default function MeetingsPage() {
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-3" style={{ color: "var(--text-primary)" }}>
-            <IconCalendarEvent className="h-6 w-6 sm:h-7 sm:w-7 text-[#5865f2]" />
+            <IconCalendarEvent className="h-6 w-6 sm:h-7 sm:w-7 text-accent" />
             所有會議
           </h1>
           <p style={{ color: "var(--text-muted)" }}>
@@ -60,9 +60,8 @@ export default function MeetingsPage() {
             placeholder="搜尋會議名稱或 ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 outline-none text-sm"
+            className="flex-1 outline-none text-sm bg-transparent"
             style={{
-              background: "var(--input-bg)",
               color: "var(--input-text)",
             }}
           />
@@ -71,7 +70,7 @@ export default function MeetingsPage() {
         {/* Meeting list */}
         {loading ? (
           <div className="flex items-center justify-center py-20">
-            <IconLoader2 className="h-8 w-8 text-[#5865f2] animate-spin" />
+            <IconLoader2 className="h-8 w-8 text-accent animate-spin" />
           </div>
         ) : filtered.length === 0 ? (
           <div className="glass-card p-8 text-center">
@@ -112,12 +111,12 @@ export default function MeetingsPage() {
                     </div>
                     <div className="flex flex-wrap items-center gap-3 text-sm" style={{ color: "var(--text-secondary)" }}>
                       <span className="flex items-center gap-1">
-                        <IconCalendarEvent className="h-3.5 w-3.5 text-[#5865f2]" />
+                        <IconCalendarEvent className="h-3.5 w-3.5 text-accent" />
                         {meeting.date_range_start} ~{" "}
                         {meeting.date_range_end}
                       </span>
-                      <span className="flex items-center gap-1"><IconUsers className="h-3.5 w-3.5 text-[#5865f2]" /> {meeting.participants_count} 人</span>
-                      <span className="flex items-center gap-1"><IconUser className="h-3.5 w-3.5 text-[#5865f2]" /> {meeting.creator_username}</span>
+                      <span className="flex items-center gap-1"><IconUsers className="h-3.5 w-3.5 text-accent" /> {meeting.participants_count} 人</span>
+                      <span className="flex items-center gap-1"><IconUser className="h-3.5 w-3.5 text-accent" /> {meeting.creator_username}</span>
                     </div>
                   </div>
                   <IconExternalLink className="h-5 w-5 shrink-0" style={{ color: "var(--text-faint)" }} />

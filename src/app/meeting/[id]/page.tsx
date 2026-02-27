@@ -22,7 +22,7 @@ export default function MeetingPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          <IconLoader2 className="h-8 w-8 text-[#5865f2] animate-spin" />
+          <IconLoader2 className="h-8 w-8 text-accent animate-spin" />
         </div>
       }
     >
@@ -261,7 +261,7 @@ function MeetingContent() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <IconLoader2 className="h-8 w-8 text-[#5865f2] animate-spin" />
+        <IconLoader2 className="h-8 w-8 text-accent animate-spin" />
       </div>
     );
   }
@@ -284,7 +284,7 @@ function MeetingContent() {
       {/* Meeting Header */}
       <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 flex items-center gap-2 sm:gap-3" style={{ color: "var(--text-primary)" }}>
-          <IconCalendarEvent className="h-5 w-5 sm:h-7 sm:w-7 text-[#5865f2] shrink-0" />
+          <IconCalendarEvent className="h-5 w-5 sm:h-7 sm:w-7 text-accent shrink-0" />
           <span className="break-words">{meeting.name}</span>
         </h1>
         {meeting.description && (
@@ -320,7 +320,7 @@ function MeetingContent() {
                 unoptimized
               />
             ) : (
-              <IconCheck className="h-5 w-5 text-[#5865f2]" />
+              <IconCheck className="h-5 w-5 text-accent" />
             )}
             <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
               已登入為 <strong style={{ color: "var(--text-primary)" }}>{username}</strong>
@@ -407,12 +407,12 @@ function MeetingContent() {
                           alt="me"
                           width={18}
                           height={18}
-                          className="rounded-full shrink-0 pointer-events-none ring-1 ring-white/50"
-                          style={{ width: 16, height: 16 }}
+                          className="rounded-full shrink-0 pointer-events-none ring-1"
+                          style={{ width: 16, height: 16, boxShadow: "0 0 0 1px var(--border)" }}
                           unoptimized
                         />
                       ) : isSelected ? (
-                        <span className="text-white font-bold text-[9px] pointer-events-none">✓</span>
+                        <span className="text-accent-foreground font-bold text-[9px] pointer-events-none">✓</span>
                       ) : othersCount > 0 ? (
                         <span style={{ color: "var(--heat-text)" }}>{othersCount}</span>
                       ) : null}
@@ -433,7 +433,7 @@ function MeetingContent() {
               {avatarUrl ? (
                 <Image src={avatarUrl} alt="me" width={10} height={10} className="rounded-full" style={{ width: 8, height: 8 }} unoptimized />
               ) : (
-                <span className="text-white text-[6px]">✓</span>
+                <span className="text-accent-foreground text-[6px]">✓</span>
               )}
             </div>
             <span>你的選擇</span>
@@ -452,7 +452,7 @@ function MeetingContent() {
           <button
             onClick={handleSave}
             disabled={saving}
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-xl bg-[#5865f2] hover:bg-[#4752c4] disabled:opacity-50 text-white font-semibold transition-all hover:scale-[1.02]"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 sm:py-2.5 rounded-xl bg-accent hover:bg-accent-hover disabled:opacity-50 text-accent-foreground font-semibold transition-all hover:scale-[1.02]"
           >
             {saving ? (
               <IconLoader2 className="h-4 w-4 animate-spin" />

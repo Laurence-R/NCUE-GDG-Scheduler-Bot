@@ -1,57 +1,94 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useSyncExternalStore,
+} from "react";
 
 type Theme = "light" | "dark";
 
-interface ThemeContextType {
+interface ThemeContextValue {
   theme: Theme;
+  setTheme: (t: Theme) => void;
   toggleTheme: () => void;
-  setTheme: (theme: Theme) => void;
 }
 
-const ThemeContext = createContext<ThemeContextType>({
-  theme: "dark",
-  toggleTheme: () => {},
-  setTheme: () => {},
-});
+const ThemeContext = createContext<ThemeContextValue | null>(null);
 
-export const useTheme = () => useContext(ThemeContext);
+function getThemeFromDOM(): Theme {
+  if (typeof document === "undefined") return "light";
+  return document.documentElement.classList.contains("dark") ? "dark" : "light";
+}
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark");
-  const [mounted, setMounted] = useState(false);
+/** 寫入主題到 <html> class + localStorage */
+function applyTheme(theme: Theme) {
+  document.documentElement.classList.remove("light", "dark");
+  document.documentElement.classList.add(theme);
+  try {
+    localStorage.setItem("theme", theme);
+  } catch {}
+}
 
-  // 初始化：從 localStorage 或系統偏好讀取
-  useEffect(() => {
-    const stored = localStorage.getItem("theme") as Theme | null;
-    if (stored === "light" || stored === "dark") {
-      setThemeState(stored);
-    } else if (window.matchMedia("(prefers-color-scheme: light)").matches) {
-      setThemeState("light");
+/* ---------- useSyncExternalStore 訂閱 ---------- */
+// 透過自訂事件讓 React 知道主題變了
+const THEME_CHANGE = "theme-change";
+const listeners = new Set<() => void>();
+
+function subscribe(cb: () => void) {
+  listeners.add(cb);
+  // 也監聽系統偏好變化
+  const mq = window.matchMedia("(prefers-color-scheme: dark)");
+  const handleSystemChange = () => {
+    // 只在用戶沒有手動選擇時跟隨系統
+    const stored = localStorage.getItem("theme");
+    if (!stored || stored === "system") {
+      applyTheme(mq.matches ? "dark" : "light");
+      listeners.forEach((fn) => fn());
     }
-    setMounted(true);
+  };
+  mq.addEventListener("change", handleSystemChange);
+  window.addEventListener(THEME_CHANGE, cb);
+  return () => {
+    listeners.delete(cb);
+    mq.removeEventListener("change", handleSystemChange);
+    window.removeEventListener(THEME_CHANGE, cb);
+  };
+}
+
+function getSnapshot(): Theme {
+  return getThemeFromDOM();
+}
+
+function getServerSnapshot(): Theme {
+  return "light"; // SSR 不重要，阻斷腳本會在 paint 前覆蓋
+}
+
+/* ---------- Provider ---------- */
+export function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  const setTheme = useCallback((t: Theme) => {
+    applyTheme(t);
+    window.dispatchEvent(new Event(THEME_CHANGE));
   }, []);
 
-  // 同步 class 到 <html>
-  useEffect(() => {
-    if (!mounted) return;
-    const root = document.documentElement;
-    root.classList.remove("light", "dark");
-    root.classList.add(theme);
-    localStorage.setItem("theme", theme);
-  }, [theme, mounted]);
+  const toggleTheme = useCallback(() => {
+    const next = getThemeFromDOM() === "dark" ? "light" : "dark";
+    applyTheme(next);
+    window.dispatchEvent(new Event(THEME_CHANGE));
+  }, []);
 
-  const setTheme = useCallback((t: Theme) => setThemeState(t), []);
-  const toggleTheme = useCallback(
-    () => setThemeState((prev) => (prev === "dark" ? "light" : "dark")),
-    []
-  );
-
-  // 防止 SSR hydration mismatch — 在 mount 前先用 dark class（與 HTML 一致）
   return (
-    <ThemeContext.Provider value={{ theme: mounted ? theme : "dark", toggleTheme, setTheme }}>
+    <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   );
+}
+
+export function useTheme(): ThemeContextValue {
+  const ctx = useContext(ThemeContext);
+  if (!ctx) throw new Error("useTheme must be used within ThemeProvider");
+  return ctx;
 }

@@ -20,7 +20,7 @@ export default function DashboardPage() {
     <Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center">
-          <IconLoader2 className="h-8 w-8 text-[#5865f2] animate-spin" />
+          <IconLoader2 className="h-8 w-8 text-accent animate-spin" />
         </div>
       }
     >
