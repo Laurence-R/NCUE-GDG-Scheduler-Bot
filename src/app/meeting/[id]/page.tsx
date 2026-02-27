@@ -9,6 +9,7 @@ import {
   IconClock,
   IconCheck,
   IconLoader2,
+  IconX,
 } from "@tabler/icons-react";
 import type { Meeting, MeetingResponse, TimeSlot } from "@/lib/supabase/database.types";
 import { useUser } from "@/contexts/user-context";
@@ -50,6 +51,14 @@ function MeetingContent() {
   const [saved, setSaved] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [dragMode, setDragMode] = useState<"add" | "remove">("add");
+  const [toast, setToast] = useState<{ message: string; type: "success" | "error" } | null>(null);
+
+  // Auto-dismiss toast
+  useEffect(() => {
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(null), 3500);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   useEffect(() => {
     async function fetchMeeting() {
@@ -194,7 +203,7 @@ function MeetingContent() {
         }
       );
 
-      await fetch(`/api/meetings/${meetingId}/respond`, {
+      const res = await fetch(`/api/meetings/${meetingId}/respond`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -205,9 +214,32 @@ function MeetingContent() {
         }),
       });
 
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || "儲存失敗");
+      }
+
+      const { response: savedResponse } = await res.json();
+
+      // 即時更新 responses 狀態，使熱力圖與回覆列表立即反映變更
+      setResponses((prev) => {
+        const exists = prev.findIndex((r) => r.discord_id === discordId);
+        if (exists >= 0) {
+          const updated = [...prev];
+          updated[exists] = savedResponse;
+          return updated;
+        }
+        return [...prev, savedResponse];
+      });
+
       setSaved(true);
+      setToast({ message: `已儲存 ${available_slots.length} 個可用時段`, type: "success" });
+
+      // 3 秒後自動重設按鈕狀態
+      setTimeout(() => setSaved(false), 3000);
     } catch (err) {
       console.error("Failed to save:", err);
+      setToast({ message: err instanceof Error ? err.message : "儲存失敗，請稍後再試", type: "error" });
     } finally {
       setSaving(false);
     }
@@ -440,6 +472,31 @@ function MeetingContent() {
               );
             })}
           </div>
+        </div>
+      )}
+
+      {/* Toast notification */}
+      {toast && (
+        <div
+          className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-5 py-3 rounded-xl shadow-lg backdrop-blur-md border animate-toast-in"
+          style={{
+            background: toast.type === "success" ? "var(--success-bg)" : "var(--danger-bg)",
+            borderColor: toast.type === "success" ? "var(--success-border)" : "var(--danger-border)",
+            color: toast.type === "success" ? "var(--success-text-strong)" : "var(--danger-text)",
+          }}
+        >
+          {toast.type === "success" ? (
+            <IconCheck className="h-4 w-4 shrink-0" />
+          ) : (
+            <IconX className="h-4 w-4 shrink-0" />
+          )}
+          <span className="text-sm font-medium">{toast.message}</span>
+          <button
+            onClick={() => setToast(null)}
+            className="ml-1 opacity-60 hover:opacity-100 transition-opacity"
+          >
+            <IconX className="h-3.5 w-3.5" />
+          </button>
         </div>
       )}
     </div>
