@@ -16,7 +16,7 @@ html.light {
   --text-primary: #1a1a2e;
   --text-secondary: #404040;
   --text-muted: #6b7280;
-  --text-faint: #9ca3af;
+  --text-faint: #6b7280;
 
   /* Surface / card */
   --surface: rgba(0, 0, 0, 0.03);
@@ -101,7 +101,7 @@ html.dark {
   --text-primary: #ffffff;
   --text-secondary: #d4d4d4;
   --text-muted: #a3a3a3;
-  --text-faint: #737373;
+  --text-faint: #8b8b8b;
 
   --surface: rgba(255, 255, 255, 0.05);
   --surface-hover: rgba(255, 255, 255, 0.07);

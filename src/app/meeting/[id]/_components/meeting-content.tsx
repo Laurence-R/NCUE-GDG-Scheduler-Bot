@@ -94,7 +94,8 @@ export function MeetingContent() {
         throw new Error(errData.error || "儲存失敗");
       }
 
-      const { response: savedResponse } = await res.json();
+      const json = await res.json();
+      const savedResponse = json.data?.response;
 
       // 即時更新 responses 狀態，使熱力圖與回覆列表立即反映變更
       setResponses((prev) => {

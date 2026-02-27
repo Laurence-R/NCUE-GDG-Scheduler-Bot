@@ -1,6 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
 import { getSessionUser } from "@/lib/auth";
+import { apiOk, apiError } from "@/lib/api-response";
 import type { MeetingResponseInsert } from "@/lib/supabase/database.types";
 
 /**
@@ -16,10 +17,7 @@ export async function POST(
   // 從 httpOnly cookie 取得登入使用者，不信任 request body
   const sessionUser = await getSessionUser();
   if (!sessionUser) {
-    return NextResponse.json(
-      { error: "請先登入 Discord" },
-      { status: 401 }
-    );
+    return apiError("請先登入 Discord", 401);
   }
 
   try {
@@ -27,10 +25,7 @@ export async function POST(
     const { available_slots } = body;
 
     if (!Array.isArray(available_slots)) {
-      return NextResponse.json(
-        { error: "缺少必要欄位（available_slots）" },
-        { status: 400 }
-      );
+      return apiError("缺少必要欄位（available_slots）", 400);
     }
 
     // 確認會議存在
@@ -41,10 +36,7 @@ export async function POST(
       .single();
 
     if (!meeting) {
-      return NextResponse.json(
-        { error: "找不到會議" },
-        { status: 404 }
-      );
+      return apiError("找不到會議", 404);
     }
 
     // Upsert 回覆（同一使用者只能有一筆）
@@ -63,11 +55,11 @@ export async function POST(
       .single();
 
     if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return apiError(error.message, 500);
     }
 
-    return NextResponse.json({ response: data });
+    return apiOk({ response: data });
   } catch {
-    return NextResponse.json({ error: "無效的請求格式" }, { status: 400 });
+    return apiError("無效的請求格式", 400);
   }
 }

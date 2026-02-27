@@ -1,4 +1,9 @@
 import type { NextConfig } from "next";
+import bundleAnalyzer from "@next/bundle-analyzer";
+
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === "true",
+});
 
 const nextConfig: NextConfig = {
   images: {
@@ -10,6 +15,8 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // discord.js 只在 server 使用，確保不進入 client bundle
+  serverExternalPackages: ["discord.js"],
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

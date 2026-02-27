@@ -54,23 +54,49 @@ CREATE TRIGGER meeting_responses_updated_at
   FOR EACH ROW EXECUTE FUNCTION update_updated_at();
 
 -- RLS（Row Level Security）
+-- 本專案使用 service_role key 從伺服器 API 存取，
+-- RLS 作為「縱深防禦」：即使 anon key 外洩也無法寫入資料。
 ALTER TABLE meetings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE meeting_responses ENABLE ROW LEVEL SECURITY;
 
--- 允許所有人讀取會議（公開）
+-- ────────── meetings ──────────
+
+-- 允許所有人讀取會議（公開分享連結需要）
 CREATE POLICY "meetings_select_all" ON meetings
   FOR SELECT USING (true);
 
--- 允許所有人讀取回覆（公開）
+-- 僅允許 service_role 新增會議（由 API 層控制身分驗證）
+CREATE POLICY "meetings_insert_service" ON meetings
+  FOR INSERT WITH CHECK (
+    current_setting('role') = 'service_role'
+  );
+
+-- 僅允許 service_role 更新會議
+CREATE POLICY "meetings_update_service" ON meetings
+  FOR UPDATE USING (
+    current_setting('role') = 'service_role'
+  );
+
+-- 僅允許 service_role 刪除會議
+CREATE POLICY "meetings_delete_service" ON meetings
+  FOR DELETE USING (
+    current_setting('role') = 'service_role'
+  );
+
+-- ────────── meeting_responses ──────────
+
+-- 允許所有人讀取回覆（查看會議結果需要）
 CREATE POLICY "responses_select_all" ON meeting_responses
   FOR SELECT USING (true);
 
--- 透過 service role 或 anon key 新增（由 API 控制權限）
-CREATE POLICY "meetings_insert_anon" ON meetings
-  FOR INSERT WITH CHECK (true);
+-- 僅允許 service_role 新增回覆
+CREATE POLICY "responses_insert_service" ON meeting_responses
+  FOR INSERT WITH CHECK (
+    current_setting('role') = 'service_role'
+  );
 
-CREATE POLICY "responses_insert_anon" ON meeting_responses
-  FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "responses_update_own" ON meeting_responses
-  FOR UPDATE USING (true);
+-- 僅允許 service_role 更新回覆
+CREATE POLICY "responses_update_service" ON meeting_responses
+  FOR UPDATE USING (
+    current_setting('role') = 'service_role'
+  );

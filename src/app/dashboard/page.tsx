@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useCallback, useEffect, useState } from "react";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   IconCalendarEvent,
@@ -16,48 +16,31 @@ import {
   IconRefresh,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import { useMeetings } from "@/hooks/use-meetings";
+import { ErrorBanner } from "@/components/ui/error-banner";
+import { AuthGuard } from "@/components/auth-guard";
 import type { Meeting } from "@/lib/supabase/database.types";
 
 export default function DashboardPage() {
   return (
-    <Suspense
-      fallback={
-        <div className={cn("min-h-screen flex items-center justify-center")}>
-          <IconLoader2 className={cn("h-8 w-8 text-accent animate-spin")} />
-        </div>
-      }
-    >
-      <DashboardContent />
-    </Suspense>
+    <AuthGuard pageName="儀表板">
+      <Suspense
+        fallback={
+          <div className={cn("min-h-screen flex items-center justify-center")}>
+            <IconLoader2 className={cn("h-8 w-8 text-accent animate-spin")} />
+          </div>
+        }
+      >
+        <DashboardContent />
+      </Suspense>
+    </AuthGuard>
   );
 }
 
 function DashboardContent() {
   const searchParams = useSearchParams();
   const loginSuccess = searchParams.get("login") === "success";
-  const [meetings, setMeetings] = useState<Meeting[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchMeetings = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/meetings");
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setMeetings(data.meetings ?? []);
-    } catch (err) {
-      console.error("Failed to fetch meetings:", err);
-      setError("無法載入會議資料，請檢查網路連線後重試。");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchMeetings();
-  }, [fetchMeetings]);
+  const { meetings, loading, error, refresh: fetchMeetings } = useMeetings();
 
   const now = new Date();
   const currentMeetings = meetings.filter(
@@ -94,19 +77,7 @@ function DashboardContent() {
       {/* Error banner */}
       {error && (
         <div className={cn("max-w-3xl mx-auto mb-6")}>
-          <div className={cn("glass-card p-4 flex items-center justify-between gap-3 border-danger-border bg-danger-bg")}>
-            <div className={cn("flex items-center gap-3")}>
-              <IconAlertTriangle className={cn("h-5 w-5 shrink-0 text-danger")} />
-              <span className={cn("text-sm text-danger")}>{error}</span>
-            </div>
-            <button
-              onClick={fetchMeetings}
-              className={cn("flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-accent hover:bg-accent-bg-subtle")}
-            >
-              <IconRefresh className={cn("h-3.5 w-3.5")} />
-              重試
-            </button>
-          </div>
+          <ErrorBanner message={error} onRetry={fetchMeetings} />
         </div>
       )}
 
@@ -167,6 +138,18 @@ function DashboardContent() {
               </code>{" "}
               建立第一場。
             </p>
+            <a
+              href="https://discord.com/channels/@me"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                "inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors",
+                "bg-[#5865F2] text-white hover:bg-[#4752c4]"
+              )}
+            >
+              <IconBrandDiscord className={cn("h-4 w-4")} />
+              前往 Discord
+            </a>
           </div>
         ) : (
           <div className={cn("space-y-3")}>

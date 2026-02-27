@@ -12,13 +12,13 @@ export function useMeetingData(meetingId: string, discordId: string) {
       try {
         const res = await fetch(`/api/meetings/${meetingId}`);
         if (!res.ok) return;
-        const data = await res.json();
-        setMeeting(data.meeting);
-        setResponses(data.responses ?? []);
+        const json = await res.json();
+        setMeeting(json.data?.meeting ?? null);
+        setResponses(json.data?.responses ?? []);
 
         // 如果使用者已有回覆，載入已選擇的時段
         if (discordId) {
-          const existing = data.responses?.find(
+          const existing = json.data?.responses?.find(
             (r: MeetingResponse) => r.discord_id === discordId
           );
           if (existing) {

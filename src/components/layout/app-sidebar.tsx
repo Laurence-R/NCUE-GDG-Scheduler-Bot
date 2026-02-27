@@ -30,27 +30,32 @@ const NAV_LINKS = [
     label: "首頁",
     href: "/",
     icon: <IconHome className={cn("h-5 w-5 shrink-0")} />,
+    requiresAuth: false,
   },
   {
     label: "儀表板",
     href: "/dashboard",
     icon: <IconLayoutDashboard className={cn("h-5 w-5 shrink-0")} />,
+    requiresAuth: true,
   },
   {
     label: "會議排程",
     href: "/meetings",
     icon: <IconCalendarEvent className={cn("h-5 w-5 shrink-0")} />,
+    requiresAuth: true,
   },
   {
     label: "設定",
     href: "/settings",
     icon: <IconSettings className={cn("h-5 w-5 shrink-0")} />,
+    requiresAuth: true,
   },
 ];
 
 export function AppSidebar({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { user } = useUser();
 
   return (
     <div className={cn("flex flex-col md:flex-row h-screen w-full overflow-hidden")}>
@@ -62,13 +67,21 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
 
             {/* Navigation */}
             <nav className={cn("mt-8 flex flex-col gap-1")}>
-              {NAV_LINKS.map((link) => (
-                <SidebarLink
-                  key={link.href}
-                  link={link}
-                  active={pathname === link.href}
-                />
-              ))}
+              {NAV_LINKS.map((link) => {
+                // 未登入且該連結需要登入 → 導向 Discord 授權
+                const href =
+                  link.requiresAuth && !user
+                    ? `/api/auth/discord?redirect=dashboard`
+                    : link.href;
+
+                return (
+                  <SidebarLink
+                    key={link.href}
+                    link={{ ...link, href }}
+                    active={pathname === link.href}
+                  />
+                );
+              })}
             </nav>
           </div>
 

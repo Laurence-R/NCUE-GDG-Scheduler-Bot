@@ -34,14 +34,14 @@
 
 | # | 任務 | 維度 | 涉及檔案 | 狀態 | 完成日期 |
 |---|------|------|---------|------|---------|
-| 11 | 收緊 Supabase RLS 政策 | 安全性 | `supabase/schema.sql` | ⬜ | — |
-| 12 | Supabase client 改為 server-only（移除 `NEXT_PUBLIC_` 前綴） | 安全性 | `src/lib/supabase/client.ts`、`.env` | ⬜ | — |
-| 13 | API 加入分頁（`limit` / `offset` 或遊標分頁） | 效能 | `src/app/api/meetings/route.ts`、前端頁面 | ⬜ | — |
-| 14 | 建立 `.env.example` 文件化所有環境變數 | 可維護性 | `.env.example`（新增） | ⬜ | — |
-| 15 | 加入 GitHub Actions CI pipeline（lint + type-check + build） | 可維護性 | `.github/workflows/ci.yml`（新增） | ⬜ | — |
-| 16 | 抽取共用 `useMeetings()` hook（消除 Dashboard/Meetings 重複 fetch 邏輯） | 架構 | `src/hooks/use-meetings.ts`（新增） | ⬜ | — |
-| 17 | 抽取共用 `<ErrorBanner />` 元件 | 架構 | `src/components/ui/error-banner.tsx`（新增） | ⬜ | — |
-| 18 | 統一 API 回應格式為 `{ data, error, meta }` | 架構 | 所有 `src/app/api/**/route.ts` | ⬜ | — |
+| 11 | 收緊 Supabase RLS 政策 | 安全性 | `supabase/schema.sql` | ✅ | 2026-02-28 |
+| 12 | Supabase client 改為 server-only（`import "server-only"`） | 安全性 | `src/lib/supabase/client.ts` | ✅ | 2026-02-28 |
+| 13 | API 加入分頁（`limit` / `offset`） | 效能 | `src/app/api/meetings/route.ts`、`src/lib/api-response.ts` | ✅ | 2026-02-28 |
+| 14 | 建立 `.env.example` 文件化所有環境變數 | 可維護性 | `.env.example` | ✅ | 2026-02-28 |
+| 15 | 加入 GitHub Actions CI pipeline（lint + type-check + build） | 可維護性 | `.github/workflows/ci.yml`（新增） | ✅ | 2026-02-28 |
+| 16 | 抽取共用 `useMeetings()` hook（消除 Dashboard/Meetings 重複 fetch 邏輯） | 架構 | `src/hooks/use-meetings.ts`（新增） | ✅ | 2026-02-28 |
+| 17 | 抽取共用 `<ErrorBanner />` 元件 | 架構 | `src/components/ui/error-banner.tsx`（新增） | ✅ | 2026-02-28 |
+| 18 | 統一 API 回應格式為 `{ data, error, meta }` | 架構 | `src/lib/api-response.ts`（新增）、所有 API routes、前端 consumers | ✅ | 2026-02-28 |
 
 ---
 
@@ -49,14 +49,14 @@
 
 | # | 任務 | 維度 | 涉及檔案 | 狀態 | 完成日期 |
 |---|------|------|---------|------|---------|
-| 19 | Time Grid 加入鍵盤導覽（`role="grid"` + 方向鍵） | UI/UX | `src/app/meeting/[id]/_components/time-grid.tsx` | ⬜ | — |
-| 20 | Toast 加入 `aria-live="polite"` / `role="status"` | UI/UX | `src/app/meeting/[id]/_components/toast-notification.tsx` | ⬜ | — |
-| 21 | `text-text-faint` 顏色對比度提升至 WCAG AA（≥ 4.5:1） | UI/UX | `src/app/globals.css` | ⬜ | — |
-| 22 | Dashboard 空狀態加入「前往 Discord」CTA 按鈕 | UI/UX | `src/app/dashboard/page.tsx` | ⬜ | — |
-| 23 | API 加入 HTTP 快取策略（`Cache-Control` / `stale-while-revalidate`） | 效能 | `src/app/api/meetings/route.ts` | ⬜ | — |
-| 24 | 安裝 `@next/bundle-analyzer` 並確認 `discord.js` 不在 client bundle | 效能 | `next.config.ts`、`package.json` | ⬜ | — |
-| 25 | `interactions/route.ts` 拆分為 `handlers/` 子模組 | 可維護性 | `src/app/api/discord/interactions/` | ⬜ | — |
-| 26 | 時間格 `HOURS` 範圍改為可配置（移除魔術數字） | 架構 | `src/app/meeting/[id]/_utils/date-helpers.ts` | ⬜ | — |
+| 19 | Time Grid 加入鍵盤導覽（`role="grid"` + 方向鍵） | UI/UX | `src/app/meeting/[id]/_components/time-grid.tsx` | ✅ | 2026-02-28 |
+| 20 | Toast 加入 `aria-live="polite"` / `role="status"` | UI/UX | `src/app/meeting/[id]/_components/toast-notification.tsx` | ✅ | 2026-02-28 |
+| 21 | `text-text-faint` 顏色對比度提升至 WCAG AA（≥ 4.5:1） | UI/UX | `src/app/globals.css` | ✅ | 2026-02-28 |
+| 22 | Dashboard 空狀態加入「前往 Discord」CTA 按鈕 | UI/UX | `src/app/dashboard/page.tsx` | ✅ | 2026-02-28 |
+| 23 | API 加入 HTTP 快取策略（`Cache-Control` / `stale-while-revalidate`） | 效能 | `src/app/api/meetings/route.ts` | ✅ | 2026-02-28 |
+| 24 | 安裝 `@next/bundle-analyzer` 並確認 `discord.js` 不在 client bundle | 效能 | `next.config.ts`、`package.json` | ✅ | 2026-02-28 |
+| 25 | `interactions/route.ts` 拆分為 `handlers/` 子模組 | 可維護性 | `src/app/api/discord/interactions/handlers/` | ✅ | 2026-02-28 |
+| 26 | 時間格 `HOURS` 範圍改為可配置（移除魔術數字） | 架構 | `src/app/meeting/[id]/_utils/date-helpers.ts` | ✅ | 2026-02-28 |
 
 ---
 
@@ -78,10 +78,10 @@
 |--------|--------|----------|----------|--------|
 | **P0** | 4 | 4 | 0 | 100% |
 | **P1** | 6 | 5 | 0 | 83%（1 延後） |
-| **P2** | 8 | 0 | 8 | 0% |
-| **P3** | 8 | 0 | 8 | 0% |
+| **P2** | 8 | 8 | 0 | 100% |
+| **P3** | 8 | 8 | 0 | 100% |
 | **P4** | 5 | 0 | 5 | 0% |
-| **總計** | **31** | **9** | **21** | **29%** |
+| **總計** | **31** | **25** | **5** | **81%** |
 
 ---
 
@@ -91,3 +91,6 @@
 |------|------|
 | 2026-02-28 | 初始建立任務表；P0 四項安全修復全數完成 |
 | 2026-02-28 | P1 完成 5/6 項：timingSafeEqual、session guard、env 驗證、error boundaries、日期格式驗證；#8 vitest 延後 |
+| 2026-02-28 | P2 全數完成 8/8：RLS 收緊、server-only、分頁、.env.example、CI pipeline、useMeetings hook、ErrorBanner、統一 API 回應 |
+| 2026-02-28 | P3 全數完成 8/8：Time Grid 鍵盤導覽、Toast aria-live、text-faint 對比度、Dashboard CTA、Cache-Control、bundle analyzer、interactions 拆分 handlers/、HOURS 可配置 |
+| 2026-02-28 | 新增功能：Auth Guard — 未登入用戶只能完整檢視首頁，Dashboard/Meetings/Settings 顯示登入提示 |

@@ -4,9 +4,18 @@ import { IconSettings, IconSun, IconMoon, IconDeviceDesktop, IconBell, IconUser,
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/contexts/theme-context";
 import { useUser } from "@/contexts/user-context";
+import { AuthGuard } from "@/components/auth-guard";
 import Image from "next/image";
 
 export default function SettingsPage() {
+  return (
+    <AuthGuard pageName="設定">
+      <SettingsContent />
+    </AuthGuard>
+  );
+}
+
+function SettingsContent() {
   const { theme, setTheme } = useTheme();
   const { user, loading, logout } = useUser();
 

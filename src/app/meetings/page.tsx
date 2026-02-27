@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   IconCalendarEvent,
@@ -9,37 +9,16 @@ import {
   IconSearch,
   IconUsers,
   IconUser,
-  IconAlertTriangle,
-  IconRefresh,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import { useMeetings } from "@/hooks/use-meetings";
+import { ErrorBanner } from "@/components/ui/error-banner";
+import { AuthGuard } from "@/components/auth-guard";
 import type { Meeting } from "@/lib/supabase/database.types";
 
 export default function MeetingsPage() {
-  const [meetings, setMeetings] = useState<Meeting[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { meetings, loading, error, refresh: fetchMeetings } = useMeetings();
   const [search, setSearch] = useState("");
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchMeetings = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const res = await fetch("/api/meetings");
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
-      setMeetings(data.meetings ?? []);
-    } catch (err) {
-      console.error("Failed to fetch meetings:", err);
-      setError("無法載入會議資料，請檢查網路連線後重試。");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchMeetings();
-  }, [fetchMeetings]);
 
   const filtered = meetings.filter(
     (m) =>
@@ -48,6 +27,7 @@ export default function MeetingsPage() {
   );
 
   return (
+    <AuthGuard pageName="會議排程">
     <div className={cn("min-h-screen p-4 sm:p-6 md:p-10")}>
       <div className={cn("max-w-4xl mx-auto")}>
         {/* Header */}
@@ -75,19 +55,7 @@ export default function MeetingsPage() {
 
         {/* Error banner */}
         {error && (
-          <div className={cn("glass-card p-4 mb-6 flex items-center justify-between gap-3 border-danger-border bg-danger-bg")}>
-            <div className={cn("flex items-center gap-3")}>
-              <IconAlertTriangle className={cn("h-5 w-5 shrink-0 text-danger")} />
-              <span className={cn("text-sm text-danger")}>{error}</span>
-            </div>
-            <button
-              onClick={fetchMeetings}
-              className={cn("flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors cursor-pointer text-accent hover:bg-accent-bg-subtle")}
-            >
-              <IconRefresh className={cn("h-3.5 w-3.5")} />
-              重試
-            </button>
-          </div>
+          <ErrorBanner message={error} onRetry={fetchMeetings} className="mb-6" />
         )}
 
         {/* Meeting list */}
@@ -144,5 +112,6 @@ export default function MeetingsPage() {
         )}
       </div>
     </div>
+    </AuthGuard>
   );
 }

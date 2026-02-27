@@ -1,5 +1,11 @@
-/** 時間範圍 8:00 ~ 22:00 */
-export const HOURS = Array.from({ length: 15 }, (_, i) => i + 8);
+/** 可配置的時間範圍（預設 8:00 ~ 22:00） */
+const HOUR_START = 8;
+const HOUR_END = 22;
+
+export const HOURS = Array.from(
+  { length: HOUR_END - HOUR_START + 1 },
+  (_, i) => i + HOUR_START
+);
 
 /** 取得日期範圍內的所有日期 */
 export function getDatesInRange(start: string, end: string): string[] {

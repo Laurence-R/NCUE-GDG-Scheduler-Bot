@@ -1,5 +1,5 @@
-import { NextResponse } from "next/server";
 import { clearSessionUser } from "@/lib/auth";
+import { apiOk } from "@/lib/api-response";
 
 /**
  * POST /api/auth/logout
@@ -7,5 +7,5 @@ import { clearSessionUser } from "@/lib/auth";
  */
 export async function POST() {
   await clearSessionUser();
-  return NextResponse.json({ success: true });
+  return apiOk({ success: true });
 }

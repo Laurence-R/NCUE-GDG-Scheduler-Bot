@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 import { supabase } from "@/lib/supabase";
+import { apiOk, apiError } from "@/lib/api-response";
 
 /**
  * GET /api/meetings/[id] — 取得單一會議詳情（含回覆）
@@ -17,10 +18,7 @@ export async function GET(
     .single();
 
   if (meetingError || !meeting) {
-    return NextResponse.json(
-      { error: "找不到會議" },
-      { status: 404 }
-    );
+    return apiError("找不到會議", 404);
   }
 
   const { data: responses, error: responsesError } = await supabase
@@ -29,13 +27,10 @@ export async function GET(
     .eq("meeting_id", id);
 
   if (responsesError) {
-    return NextResponse.json(
-      { error: responsesError.message },
-      { status: 500 }
-    );
+    return apiError(responsesError.message, 500);
   }
 
-  return NextResponse.json({
+  return apiOk({
     meeting,
     responses: responses ?? [],
   });

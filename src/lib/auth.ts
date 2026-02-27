@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { apiError } from "./api-response";
 
 // Re-export for backward compatibility (server-side consumers)
 export { getAvatarUrl } from "./avatar";
@@ -61,10 +62,7 @@ export async function clearSessionUser(): Promise<void> {
 export async function requireSession(): Promise<DiscordUser | NextResponse> {
   const user = await getSessionUser();
   if (!user) {
-    return NextResponse.json(
-      { error: "請先登入 Discord" },
-      { status: 401 }
-    );
+    return apiError("請先登入 Discord", 401);
   }
   return user;
 }
