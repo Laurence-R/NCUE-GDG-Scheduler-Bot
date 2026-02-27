@@ -13,6 +13,7 @@ import {
 } from "@tabler/icons-react";
 import type { Meeting, MeetingResponse, TimeSlot } from "@/lib/supabase/database.types";
 import { useUser } from "@/contexts/user-context";
+import { getAvatarUrl } from "@/lib/avatar";
 
 // 時間範圍 8:00 ~ 22:00
 const HOURS = Array.from({ length: 15 }, (_, i) => i + 8);
@@ -472,7 +473,7 @@ function MeetingContent() {
           </h3>
           <div className="flex flex-wrap gap-2">
             {responses.map((r) => {
-              const respAvatarUrl = getResponseAvatarUrl(r.discord_id, r.avatar_hash);
+              const respAvatarUrl = getAvatarUrl(r.discord_id, r.avatar_hash ?? null);
               return (
                 <div
                   key={r.id}
@@ -524,16 +525,6 @@ function MeetingContent() {
       )}
     </div>
   );
-}
-
-/** 從 discord_id 和 avatar_hash 產生頭像 URL */
-function getResponseAvatarUrl(discordId: string, avatarHash: string | null | undefined): string {
-  if (avatarHash) {
-    const ext = avatarHash.startsWith("a_") ? "gif" : "png";
-    return `https://cdn.discordapp.com/avatars/${discordId}/${avatarHash}.${ext}`;
-  }
-  const index = Number(BigInt(discordId) >> BigInt(22)) % 6;
-  return `https://cdn.discordapp.com/embed/avatars/${index}.png`;
 }
 
 /** 取得日期範圍內的所有日期 */

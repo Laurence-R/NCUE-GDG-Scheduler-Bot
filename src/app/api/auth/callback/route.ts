@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { setSessionUser, getAvatarUrl } from "@/lib/auth";
+import { verifySignedState } from "@/lib/oauth-state";
 
 /**
  * Discord OAuth2 Callback
@@ -8,14 +9,13 @@ import { setSessionUser, getAvatarUrl } from "@/lib/auth";
  * Discord 授權完成後會重新導向到此端點，
  * 攜帶 authorization code，用來交換 access token。
  *
- * 依照 state 參數決定重新導向的目標：
- * - state="dashboard" → /dashboard
- * - state=meetingId  → /meeting/{meetingId}
+ * 驗證 HMAC 簽章的 state 參數後，依照其中的 redirect 欄位
+ * 決定重新導向的目標。
  */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
-  const state = searchParams.get("state");
+  const rawState = searchParams.get("state");
 
   if (!code) {
     return NextResponse.json(
@@ -24,6 +24,16 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  // 驗證 state 的 HMAC 簽章與過期時間
+  const statePayload = rawState ? await verifySignedState(rawState) : null;
+  if (!statePayload) {
+    return NextResponse.json(
+      { error: "無效或過期的授權請求，請重新操作" },
+      { status: 403 }
+    );
+  }
+
+  const redirectTarget = statePayload.redirect;
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
   try {
@@ -81,17 +91,10 @@ export async function GET(request: NextRequest) {
     const avatarUrl = getAvatarUrl(discordId, avatarHash);
     const userParams = `discord_id=${discordId}&username=${encodeURIComponent(username)}&avatar=${encodeURIComponent(avatarUrl)}`;
 
-    // 依照 state 決定重新導向
-    if (state === "dashboard") {
+    // 依照 state payload 中的 redirect 決定導向目標
+    if (redirectTarget.startsWith("MTG-")) {
       return NextResponse.redirect(
-        `${appUrl}/dashboard?login=success&${userParams}`
-      );
-    }
-
-    // state 可能是 meetingId，導向到會議頁面
-    if (state && state.startsWith("MTG-")) {
-      return NextResponse.redirect(
-        `${appUrl}/meeting/${state}?${userParams}`
+        `${appUrl}/meeting/${redirectTarget}?${userParams}`
       );
     }
 

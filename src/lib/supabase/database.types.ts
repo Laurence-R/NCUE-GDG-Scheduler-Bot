@@ -79,6 +79,7 @@ export type Database = {
           channel_id?: string | null;
           updated_at?: string;
         };
+        Relationships: [];
       };
       meeting_responses: {
         Row: {
@@ -109,8 +110,21 @@ export type Database = {
           available_slots?: Json;
           updated_at?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: "meeting_responses_meeting_id_fkey";
+            columns: ["meeting_id"];
+            isOneToOne: false;
+            referencedRelation: "meetings";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
+    Views: Record<string, never>;
+    Functions: Record<string, never>;
+    Enums: Record<string, never>;
+    CompositeTypes: Record<string, never>;
   };
 };
 

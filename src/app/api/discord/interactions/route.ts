@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyKey } from "@/lib/discord/verify";
 import { supabase } from "@/lib/supabase";
+import type { MeetingInsert } from "@/lib/supabase/database.types";
+import { createSignedState } from "@/lib/oauth-state";
 
 /**
  * Discord Interactions Endpoint
@@ -38,7 +40,7 @@ export async function POST(request: NextRequest) {
 
   // 處理 Application Command（type: 2）
   if (interaction.type === 2) {
-    return handleApplicationCommand(interaction);
+    return await handleApplicationCommand(interaction);
   }
 
   // 處理 Modal Submit（type: 5）
@@ -52,7 +54,7 @@ export async function POST(request: NextRequest) {
 /**
  * 處理 /scheduler 指令的子指令
  */
-function handleApplicationCommand(interaction: Record<string, unknown>) {
+async function handleApplicationCommand(interaction: Record<string, unknown>) {
   const data = interaction.data as {
     name: string;
     options?: Array<{ name: string; type: number; options?: Array<{ name: string; value: string }> }>;
@@ -71,7 +73,7 @@ function handleApplicationCommand(interaction: Record<string, unknown>) {
     case "meeting":
       return handleMeetingCommand();
     case "dashboard":
-      return handleDashboardCommand(interaction);
+      return await handleDashboardCommand(interaction);
     default:
       return NextResponse.json({
         type: 4,
@@ -150,7 +152,7 @@ function handleMeetingCommand() {
 /**
  * /scheduler dashboard → 回傳帶按鈕的 Embed（type: 4）
  */
-function handleDashboardCommand(interaction: Record<string, unknown>) {
+async function handleDashboardCommand(interaction: Record<string, unknown>) {
   const clientId = process.env.DISCORD_APP_ID;
   const redirectUri = process.env.DISCORD_REDIRECT_URI;
 
@@ -164,13 +166,16 @@ function handleDashboardCommand(interaction: Record<string, unknown>) {
     });
   }
 
+  // 產生 HMAC 簽章的 state
+  const state = await createSignedState({ redirect: "dashboard" });
+
   const oauthUrl =
     `https://discord.com/oauth2/authorize` +
     `?response_type=code` +
     `&client_id=${clientId}` +
     `&scope=identify` +
     `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-    `&state=dashboard` +
+    `&state=${encodeURIComponent(state)}` +
     `&prompt=none`;
 
   return NextResponse.json({
@@ -257,21 +262,26 @@ async function handleModalSubmit(interaction: Record<string, unknown>) {
       creator_username: creatorUsername,
       guild_id: (interaction.guild_id as string) || null,
       channel_id: (interaction.channel_id as string) || null,
-    } as never);
+    } satisfies MeetingInsert);
   } catch (err) {
     console.error("儲存會議到 Supabase 失敗：", err);
   }
 
   // 建立 OAuth2 URL，讓使用者登入後導向會議頁面
-  const fillUrl = clientId && redirectUri
-    ? `https://discord.com/oauth2/authorize` +
+  let fillUrl: string;
+  if (clientId && redirectUri) {
+    const state = await createSignedState({ redirect: meetingId });
+    fillUrl =
+      `https://discord.com/oauth2/authorize` +
       `?response_type=code` +
       `&client_id=${clientId}` +
       `&scope=identify` +
       `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&state=${meetingId}` +
-      `&prompt=none`
-    : `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/meeting/${meetingId}`;
+      `&state=${encodeURIComponent(state)}` +
+      `&prompt=none`;
+  } else {
+    fillUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/meeting/${meetingId}`;
+  }
 
   return NextResponse.json({
     type: 4,

@@ -47,7 +47,7 @@ export async function POST(
 
     const { data, error } = await supabase
       .from("meeting_responses")
-      .upsert(upsertData as never, { onConflict: "meeting_id,discord_id" })
+      .upsert(upsertData, { onConflict: "meeting_id,discord_id" })
       .select()
       .single();
 

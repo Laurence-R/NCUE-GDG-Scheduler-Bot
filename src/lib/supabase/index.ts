@@ -1,4 +1,4 @@
-export { supabase, createSupabaseClient, isSupabaseConfigured } from "./client";
+export { supabase } from "./client";
 export type {
   Database,
   Meeting,

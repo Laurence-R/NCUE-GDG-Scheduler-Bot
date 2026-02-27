@@ -1,6 +1,5 @@
 import {
   SlashCommandBuilder,
-  type ChatInputCommandInteraction,
 } from "discord.js";
 
 /**
@@ -28,10 +27,3 @@ export const schedulerCommand = new SlashCommandBuilder()
  * 所有要註冊的指令清單
  */
 export const ALL_COMMANDS = [schedulerCommand];
-
-/**
- * 指令處理器類型
- */
-export type CommandHandler = (
-  interaction: ChatInputCommandInteraction
-) => Promise<void>;
