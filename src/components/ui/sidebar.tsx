@@ -88,10 +88,13 @@ export const DesktopSidebar = ({
     <motion.div
       className={cn(
         "h-full px-4 py-4 hidden md:flex md:flex-col w-[300px] shrink-0",
-        // Glass morphism style
-        "bg-white/5 backdrop-blur-xl border-r border-white/10",
+        "backdrop-blur-xl",
         className
       )}
+      style={{
+        background: "var(--sidebar-bg)",
+        borderRight: "1px solid var(--sidebar-border)",
+      }}
       animate={{
         width: animate ? (open ? "300px" : "60px") : "300px",
       }}
@@ -115,18 +118,23 @@ export const MobileSidebar = ({
       <div
         className={cn(
           "h-14 px-4 flex flex-row md:hidden items-center justify-between",
-          "bg-white/5 backdrop-blur-xl border-b border-white/10 w-full"
+          "backdrop-blur-xl w-full"
         )}
+        style={{
+          background: "var(--sidebar-bg)",
+          borderBottom: "1px solid var(--sidebar-border)",
+        }}
         {...props}
       >
         <div className="flex items-center gap-2">
           <div className="h-6 w-6 shrink-0 rounded-md bg-[#5865f2] flex items-center justify-center">
             <IconMenu2 className="h-3.5 w-3.5 text-white" />
           </div>
-          <span className="text-sm font-semibold text-white">GDG Scheduler</span>
+          <span className="text-sm font-semibold" style={{ color: "var(--text-primary)" }}>GDG Scheduler</span>
         </div>
         <IconMenu2
-          className="text-neutral-200 cursor-pointer h-5 w-5"
+          className="cursor-pointer h-5 w-5"
+          style={{ color: "var(--text-secondary)" }}
           onClick={() => setOpen(!open)}
         />
       </div>
@@ -142,12 +150,14 @@ export const MobileSidebar = ({
             }}
             className={cn(
               "fixed h-full w-full inset-0 p-6 pt-5 z-[100] flex flex-col justify-between md:hidden",
-              "bg-gray-950/95 backdrop-blur-xl",
+              "backdrop-blur-xl",
               className
             )}
+            style={{ background: "var(--mobile-overlay)" }}
           >
             <div
-              className="absolute right-6 top-5 z-50 text-neutral-200 cursor-pointer"
+              className="absolute right-6 top-5 z-50 cursor-pointer"
+              style={{ color: "var(--text-secondary)" }}
               onClick={() => setOpen(!open)}
             >
               <IconX className="h-5 w-5" />
@@ -178,11 +188,24 @@ export const SidebarLink = ({
       className={cn(
         "flex items-center gap-2 group/sidebar py-2 rounded-lg transition-colors",
         !open && animate ? "justify-center px-0" : "justify-start px-2",
-        active
-          ? "bg-white/10 text-white"
-          : "text-neutral-400 hover:text-white hover:bg-white/5",
         className
       )}
+      style={{
+        color: active ? "var(--text-primary)" : "var(--text-muted)",
+        background: active ? "var(--sidebar-active)" : "transparent",
+      }}
+      onMouseEnter={(e) => {
+        if (!active) {
+          e.currentTarget.style.color = "var(--text-primary)";
+          e.currentTarget.style.background = "var(--sidebar-hover)";
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!active) {
+          e.currentTarget.style.color = "var(--text-muted)";
+          e.currentTarget.style.background = "transparent";
+        }
+      }}
       {...props}
     >
       {link.icon}

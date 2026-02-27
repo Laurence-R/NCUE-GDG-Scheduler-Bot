@@ -14,33 +14,36 @@ import {
   IconLogin,
   IconLogout,
   IconSettings,
+  IconSun,
+  IconMoon,
 } from "@tabler/icons-react";
 import { motion } from "motion/react";
 import Link from "next/link";
 import Image from "next/image";
 import { useUser } from "@/contexts/user-context";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useTheme } from "@/contexts/theme-context";
 
 const NAV_LINKS = [
   {
     label: "首頁",
     href: "/",
-    icon: <IconHome className="h-5 w-5 shrink-0 text-neutral-400" />,
+    icon: <IconHome className="h-5 w-5 shrink-0" style={{ color: "var(--text-muted)" }} />,
   },
   {
     label: "儀表板",
     href: "/dashboard",
-    icon: <IconLayoutDashboard className="h-5 w-5 shrink-0 text-neutral-400" />,
+    icon: <IconLayoutDashboard className="h-5 w-5 shrink-0" style={{ color: "var(--text-muted)" }} />,
   },
   {
     label: "會議排程",
     href: "/meetings",
-    icon: <IconCalendarEvent className="h-5 w-5 shrink-0 text-neutral-400" />,
+    icon: <IconCalendarEvent className="h-5 w-5 shrink-0" style={{ color: "var(--text-muted)" }} />,
   },
   {
     label: "設定",
     href: "/settings",
-    icon: <IconSettings className="h-5 w-5 shrink-0 text-neutral-400" />,
+    icon: <IconSettings className="h-5 w-5 shrink-0" style={{ color: "var(--text-muted)" }} />,
   },
 ];
 
@@ -49,7 +52,7 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col md:flex-row h-screen w-full overflow-hidden bg-[#0a0a0f]">
+    <div className="flex flex-col md:flex-row h-screen w-full overflow-hidden" style={{ background: "var(--background)" }}>
       <Sidebar open={open} setOpen={setOpen}>
         <SidebarBody className="justify-between gap-10">
           <div className="flex flex-1 flex-col overflow-y-auto overflow-x-hidden">
@@ -68,8 +71,9 @@ export function AppSidebar({ children }: { children: React.ReactNode }) {
             </nav>
           </div>
 
-          {/* Bottom: User status */}
-          <div>
+          {/* Bottom: Theme toggle + User status */}
+          <div className="flex flex-col gap-2">
+            <ThemeToggle />
             <UserStatus />
           </div>
         </SidebarBody>
@@ -87,7 +91,8 @@ const Logo = () => {
   return (
     <Link
       href="/"
-      className="relative z-20 flex items-center gap-2 py-1 text-sm font-medium text-white"
+      className="relative z-20 flex items-center gap-2 py-1 text-sm font-medium"
+      style={{ color: "var(--text-primary)" }}
     >
       <div className="h-6 w-6 shrink-0 rounded-md bg-[#5865f2] flex items-center justify-center">
         <IconCalendarEvent className="h-4 w-4 text-white" />
@@ -116,6 +121,48 @@ const LogoIcon = () => {
   );
 };
 
+/** 深淺色切換按鈕 */
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  const { open, animate } = useSidebar();
+  const showLabel = animate ? open : true;
+
+  return (
+    <button
+      onClick={toggleTheme}
+      className="flex items-center gap-2 py-2 rounded-lg transition-colors cursor-pointer"
+      style={{
+        color: "var(--text-muted)",
+        justifyContent: !showLabel ? "center" : "flex-start",
+        paddingInline: !showLabel ? "0" : "0.5rem",
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.color = "var(--text-primary)";
+        e.currentTarget.style.background = "var(--sidebar-hover)";
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.color = "var(--text-muted)";
+        e.currentTarget.style.background = "transparent";
+      }}
+    >
+      {theme === "dark" ? (
+        <IconSun className="h-5 w-5 shrink-0 text-amber-400" />
+      ) : (
+        <IconMoon className="h-5 w-5 shrink-0 text-indigo-500" />
+      )}
+      {showLabel && (
+        <motion.span
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-sm whitespace-pre"
+        >
+          {theme === "dark" ? "淺色模式" : "深色模式"}
+        </motion.span>
+      )}
+    </button>
+  );
+}
+
 /** 側邊欄底部：使用者登入狀態 */
 function UserStatus() {
   const { user, loading, logout } = useUser();
@@ -125,7 +172,7 @@ function UserStatus() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-2">
-        <div className="h-8 w-8 rounded-full bg-white/10 animate-pulse" />
+        <div className="h-8 w-8 rounded-full animate-pulse" style={{ background: "var(--surface-hover)" }} />
       </div>
     );
   }
@@ -134,9 +181,18 @@ function UserStatus() {
     return (
       <a
         href="/api/auth/discord"
-        className={`flex items-center gap-2 py-2 rounded-lg transition-colors text-neutral-400 hover:text-white hover:bg-white/5 ${
+        className={`flex items-center gap-2 py-2 rounded-lg transition-colors ${
           !showLabel ? "justify-center px-0" : "justify-start px-2"
         }`}
+        style={{ color: "var(--text-muted)" }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.color = "var(--text-primary)";
+          e.currentTarget.style.background = "var(--sidebar-hover)";
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.color = "var(--text-muted)";
+          e.currentTarget.style.background = "transparent";
+        }}
       >
         <IconLogin className="h-5 w-5 shrink-0 text-[#5865f2]" />
         {showLabel && (
@@ -165,7 +221,8 @@ function UserStatus() {
           alt={user.username}
           width={28}
           height={28}
-          className="rounded-full shrink-0 ring-2 ring-[#5865f2]/40"
+          className="rounded-full shrink-0"
+          style={{ boxShadow: "0 0 0 2px var(--accent-ring)" }}
           unoptimized
         />
         {showLabel && (
@@ -174,10 +231,10 @@ function UserStatus() {
             animate={{ opacity: 1 }}
             className="flex flex-col min-w-0"
           >
-            <span className="text-sm font-medium text-white truncate">
+            <span className="text-sm font-medium truncate" style={{ color: "var(--text-primary)" }}>
               {user.username}
             </span>
-            <span className="text-[10px] text-neutral-500 truncate">
+            <span className="text-[10px] truncate" style={{ color: "var(--text-faint)" }}>
               已連結 Discord
             </span>
           </motion.div>
@@ -190,7 +247,16 @@ function UserStatus() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           onClick={logout}
-          className="flex items-center gap-2 px-2 py-1.5 rounded-lg text-neutral-500 hover:text-red-400 hover:bg-red-500/10 transition-colors text-xs cursor-pointer"
+          className="flex items-center gap-2 px-2 py-1.5 rounded-lg transition-colors text-xs cursor-pointer"
+          style={{ color: "var(--text-faint)" }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.color = "var(--danger-text)";
+            e.currentTarget.style.background = "var(--danger-bg)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.color = "var(--text-faint)";
+            e.currentTarget.style.background = "transparent";
+          }}
         >
           <IconLogout className="h-4 w-4 shrink-0" />
           登出

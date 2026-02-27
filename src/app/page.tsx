@@ -14,21 +14,31 @@ export default function Home() {
       {/* Hero Section */}
       <section className="max-w-4xl mx-auto mt-6 sm:mt-8 md:mt-16 mb-10 sm:mb-16">
         <div className="flex items-center gap-2 mb-4">
-          <span className="px-3 py-1 text-xs font-medium rounded-full bg-[#5865f2]/20 text-[#5865f2] border border-[#5865f2]/30">
+          <span
+            className="px-3 py-1 text-xs font-medium rounded-full"
+            style={{
+              background: "var(--accent-bg-medium)",
+              color: "var(--accent)",
+              border: "1px solid var(--accent-border-subtle)",
+            }}
+          >
             <IconSparkles className="inline h-3 w-3 mr-1" />
             GDG Community
           </span>
         </div>
 
-        <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
+        <h1 className="text-2xl sm:text-4xl md:text-5xl font-bold mb-4 leading-tight" style={{ color: "var(--text-primary)" }}>
           GDG Scheduler
           <br />
-          <span className="text-neutral-400">When2Meet 風格會議排程</span>
+          <span style={{ color: "var(--text-muted)" }}>When2Meet 風格會議排程</span>
         </h1>
 
-        <p className="text-sm sm:text-lg text-neutral-400 mb-6 sm:mb-8 max-w-2xl">
+        <p className="text-sm sm:text-lg mb-6 sm:mb-8 max-w-2xl" style={{ color: "var(--text-muted)" }}>
           在 Discord 中使用{" "}
-          <code className="px-2 py-0.5 rounded bg-white/10 text-[#5865f2] text-sm font-mono">
+          <code
+            className="px-2 py-0.5 rounded text-sm font-mono"
+            style={{ background: "var(--code-bg)", color: "var(--code-text)" }}
+          >
             /scheduler meeting
           </code>{" "}
           建立會議排程，透過 OAuth2 登入後在網頁上填寫你的可用時間，
@@ -45,7 +55,8 @@ export default function Home() {
           </Link>
           <Link
             href="/api/auth/discord"
-            className="flex items-center justify-center gap-2 glass-card px-8 py-3 text-white font-semibold hover:bg-white/10 transition-all"
+            className="flex items-center justify-center gap-2 glass-card px-8 py-3 font-semibold transition-all"
+            style={{ color: "var(--text-primary)" }}
           >
             <IconBrandDiscord className="h-5 w-5 text-[#5865f2]" />
             以 Discord 登入
@@ -56,13 +67,16 @@ export default function Home() {
       {/* Feature Cards */}
       <section className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-10 sm:mb-16">
         <div className="glass-card p-6">
-          <div className="w-10 h-10 rounded-lg bg-[#5865f2]/20 flex items-center justify-center mb-4">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style={{ background: "var(--accent-bg-medium)" }}>
             <IconCalendarEvent className="h-5 w-5 text-[#5865f2]" />
           </div>
-          <h3 className="text-white font-semibold mb-2">建立會議</h3>
-          <p className="text-neutral-400 text-sm leading-relaxed">
+          <h3 className="font-semibold mb-2" style={{ color: "var(--text-primary)" }}>建立會議</h3>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
             使用{" "}
-            <code className="px-1.5 py-0.5 rounded bg-white/10 text-xs font-mono">
+            <code
+              className="px-1.5 py-0.5 rounded text-xs font-mono"
+              style={{ background: "var(--code-bg)", color: "var(--code-text)" }}
+            >
               /scheduler meeting
             </code>{" "}
             彈出 Modal 填寫會議名稱、人數、日期範圍
@@ -70,24 +84,27 @@ export default function Home() {
         </div>
 
         <div className="glass-card p-6">
-          <div className="w-10 h-10 rounded-lg bg-emerald-500/20 flex items-center justify-center mb-4">
-            <IconUsers className="h-5 w-5 text-emerald-400" />
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style={{ background: "var(--success-bg-medium)" }}>
+            <IconUsers className="h-5 w-5" style={{ color: "var(--success-text)" }} />
           </div>
-          <h3 className="text-white font-semibold mb-2">填寫時段</h3>
-          <p className="text-neutral-400 text-sm leading-relaxed">
+          <h3 className="font-semibold mb-2" style={{ color: "var(--text-primary)" }}>填寫時段</h3>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
             Bot 發送含有「填寫可用時間」按鈕的 Embed，
             點擊後透過 OAuth2 登入並在 When2Meet 格式的時間表上勾選
           </p>
         </div>
 
         <div className="glass-card p-6">
-          <div className="w-10 h-10 rounded-lg bg-amber-500/20 flex items-center justify-center mb-4">
-            <IconClock className="h-5 w-5 text-amber-400" />
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center mb-4" style={{ background: "var(--warning-bg-medium)" }}>
+            <IconClock className="h-5 w-5" style={{ color: "var(--warning-text)" }} />
           </div>
-          <h3 className="text-white font-semibold mb-2">查看結果</h3>
-          <p className="text-neutral-400 text-sm leading-relaxed">
+          <h3 className="font-semibold mb-2" style={{ color: "var(--text-primary)" }}>查看結果</h3>
+          <p className="text-sm leading-relaxed" style={{ color: "var(--text-muted)" }}>
             使用{" "}
-            <code className="px-1.5 py-0.5 rounded bg-white/10 text-xs font-mono">
+            <code
+              className="px-1.5 py-0.5 rounded text-xs font-mono"
+              style={{ background: "var(--code-bg)", color: "var(--code-text)" }}
+            >
               /scheduler dashboard
             </code>{" "}
             開啟儀表板，檢視所有人的可用時段與最佳會議時間
@@ -97,7 +114,7 @@ export default function Home() {
 
       {/* Flow Diagram */}
       <section className="max-w-4xl mx-auto mb-16">
-        <h2 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6">使用流程</h2>
+        <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6" style={{ color: "var(--text-primary)" }}>使用流程</h2>
         <div className="glass-card p-4 sm:p-8">
           <div className="flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-6 text-sm">
             <Step number={1} text="Leader 輸入 /scheduler meeting" />
@@ -117,16 +134,19 @@ export default function Home() {
 function Step({ number, text }: { number: number; text: string }) {
   return (
     <div className="flex items-center gap-3">
-      <span className="w-8 h-8 shrink-0 rounded-full bg-[#5865f2]/30 text-[#5865f2] flex items-center justify-center font-bold text-sm">
+      <span
+        className="w-8 h-8 shrink-0 rounded-full flex items-center justify-center font-bold text-sm"
+        style={{ background: "var(--accent-bg-medium)", color: "var(--accent)" }}
+      >
         {number}
       </span>
-      <span className="text-neutral-300">{text}</span>
+      <span style={{ color: "var(--text-secondary)" }}>{text}</span>
     </div>
   );
 }
 
 function Arrow() {
   return (
-    <IconArrowRight className="hidden md:block h-4 w-4 text-neutral-600 shrink-0" />
+    <IconArrowRight className="hidden md:block h-4 w-4 shrink-0" style={{ color: "var(--text-faint)" }} />
   );
 }

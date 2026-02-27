@@ -1,12 +1,158 @@
 @import "tailwindcss";
 
+/* ========== Dark Theme (default) ========== */
+html.dark,
 :root {
   --background: #0a0a0f;
   --foreground: #ededed;
   --accent: #5865f2;
   --accent-hover: #4752c4;
-  --glass-bg: rgba(255, 255, 255, 0.03);
-  --glass-border: rgba(255, 255, 255, 0.08);
+
+  /* Semantic text colors */
+  --text-primary: #ffffff;
+  --text-secondary: #d4d4d4;
+  --text-muted: #a3a3a3;
+  --text-faint: #737373;
+
+  /* Surface / card */
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-hover: rgba(255, 255, 255, 0.07);
+  --surface-raised: rgba(255, 255, 255, 0.08);
+  --surface-raised-hover: rgba(255, 255, 255, 0.13);
+
+  /* Borders */
+  --border: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.2);
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-strong: rgba(255, 255, 255, 0.18);
+
+  /* Sidebar */
+  --sidebar-bg: rgba(255, 255, 255, 0.05);
+  --sidebar-border: rgba(255, 255, 255, 0.1);
+  --sidebar-active: rgba(255, 255, 255, 0.1);
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --mobile-overlay: rgba(3, 7, 18, 0.95);
+
+  /* Grid */
+  --grid-cell-border: rgba(255, 255, 255, 0.05);
+  --grid-available-bg: rgba(0, 210, 106, 0.6);
+  --grid-available-border: rgba(0, 210, 106, 0.3);
+  --grid-selected-bg: rgba(88, 101, 242, 0.7);
+  --grid-selected-border: rgba(88, 101, 242, 0.4);
+  --grid-heat-color: 0, 210, 106;
+
+  /* Accent highlights */
+  --accent-glow: rgba(88, 101, 242, 0.06);
+  --accent-glow-hover: rgba(88, 101, 242, 0.12);
+  --accent-border-hover: rgba(88, 101, 242, 0.4);
+  --accent-bg-subtle: rgba(88, 101, 242, 0.1);
+  --accent-bg-medium: rgba(88, 101, 242, 0.2);
+  --accent-border-subtle: rgba(88, 101, 242, 0.3);
+  --accent-ring: rgba(88, 101, 242, 0.4);
+
+  /* Status colors */
+  --success-bg: rgba(16, 185, 129, 0.1);
+  --success-bg-medium: rgba(16, 185, 129, 0.2);
+  --success-border: rgba(16, 185, 129, 0.3);
+  --success-text: #34d399;
+  --success-text-strong: #6ee7b7;
+  --warning-bg: rgba(245, 158, 11, 0.1);
+  --warning-bg-medium: rgba(245, 158, 11, 0.2);
+  --warning-border: rgba(245, 158, 11, 0.3);
+  --warning-text: #fbbf24;
+  --danger-text: #f87171;
+  --danger-bg: rgba(239, 68, 68, 0.1);
+
+  /* Input */
+  --input-bg: transparent;
+  --input-text: #ffffff;
+  --input-placeholder: #737373;
+
+  /* Scrollbar */
+  --scrollbar-thumb: rgba(255, 255, 255, 0.1);
+  --scrollbar-thumb-hover: rgba(255, 255, 255, 0.2);
+
+  /* Code */
+  --code-bg: rgba(255, 255, 255, 0.1);
+  --code-text: #818cf8;
+
+  /* Badge / chip */
+  --badge-empty-bg: rgba(255, 255, 255, 0.02);
+  --badge-empty-border: rgba(255, 255, 255, 0.05);
+
+  /* Legend heat text */
+  --heat-text: rgba(110, 231, 183, 0.7);
+}
+
+/* ========== Light Theme ========== */
+html.light {
+  --background: #f5f7fa;
+  --foreground: #1a1a2e;
+  --accent: #5865f2;
+  --accent-hover: #4752c4;
+
+  --text-primary: #1a1a2e;
+  --text-secondary: #404040;
+  --text-muted: #6b7280;
+  --text-faint: #9ca3af;
+
+  --surface: rgba(0, 0, 0, 0.03);
+  --surface-hover: rgba(0, 0, 0, 0.06);
+  --surface-raised: rgba(255, 255, 255, 0.85);
+  --surface-raised-hover: rgba(255, 255, 255, 0.95);
+
+  --border: rgba(0, 0, 0, 0.1);
+  --border-hover: rgba(0, 0, 0, 0.18);
+  --border-subtle: rgba(0, 0, 0, 0.06);
+  --border-strong: rgba(0, 0, 0, 0.15);
+
+  --sidebar-bg: rgba(255, 255, 255, 0.7);
+  --sidebar-border: rgba(0, 0, 0, 0.08);
+  --sidebar-active: rgba(88, 101, 242, 0.1);
+  --sidebar-hover: rgba(0, 0, 0, 0.04);
+  --mobile-overlay: rgba(255, 255, 255, 0.97);
+
+  --grid-cell-border: rgba(0, 0, 0, 0.08);
+  --grid-available-bg: rgba(0, 180, 90, 0.55);
+  --grid-available-border: rgba(0, 180, 90, 0.3);
+  --grid-selected-bg: rgba(88, 101, 242, 0.65);
+  --grid-selected-border: rgba(88, 101, 242, 0.4);
+  --grid-heat-color: 0, 170, 85;
+
+  --accent-glow: rgba(88, 101, 242, 0.08);
+  --accent-glow-hover: rgba(88, 101, 242, 0.15);
+  --accent-border-hover: rgba(88, 101, 242, 0.45);
+  --accent-bg-subtle: rgba(88, 101, 242, 0.08);
+  --accent-bg-medium: rgba(88, 101, 242, 0.12);
+  --accent-border-subtle: rgba(88, 101, 242, 0.25);
+  --accent-ring: rgba(88, 101, 242, 0.3);
+
+  --success-bg: rgba(16, 185, 129, 0.08);
+  --success-bg-medium: rgba(16, 185, 129, 0.15);
+  --success-border: rgba(16, 185, 129, 0.25);
+  --success-text: #059669;
+  --success-text-strong: #047857;
+  --warning-bg: rgba(245, 158, 11, 0.08);
+  --warning-bg-medium: rgba(245, 158, 11, 0.15);
+  --warning-border: rgba(245, 158, 11, 0.25);
+  --warning-text: #d97706;
+  --danger-text: #dc2626;
+  --danger-bg: rgba(239, 68, 68, 0.08);
+
+  --input-bg: rgba(255, 255, 255, 0.8);
+  --input-text: #1a1a2e;
+  --input-placeholder: #9ca3af;
+
+  --scrollbar-thumb: rgba(0, 0, 0, 0.12);
+  --scrollbar-thumb-hover: rgba(0, 0, 0, 0.25);
+
+  --code-bg: rgba(88, 101, 242, 0.08);
+  --code-text: #5865f2;
+
+  --badge-empty-bg: rgba(0, 0, 0, 0.02);
+  --badge-empty-border: rgba(0, 0, 0, 0.08);
+
+  --heat-text: rgba(5, 150, 105, 0.8);
 }
 
 @theme inline {
@@ -22,47 +168,48 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans, Arial, Helvetica, sans-serif);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Glass morphism utilities */
 .glass {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--border);
   border-radius: 1rem;
   transition: all 0.3s ease;
 }
 
 .glass-card:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--surface-hover);
+  border-color: var(--border-hover);
 }
 
 .meeting-card {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.18);
-  box-shadow: 0 0 20px rgba(88, 101, 242, 0.06);
+  background: var(--surface-raised);
+  border-color: var(--border-strong);
+  box-shadow: 0 0 20px var(--accent-glow);
 }
 
 .meeting-card:hover {
-  background: rgba(255, 255, 255, 0.13);
-  border-color: rgba(88, 101, 242, 0.4);
-  box-shadow: 0 0 24px rgba(88, 101, 242, 0.12);
+  background: var(--surface-raised-hover);
+  border-color: var(--accent-border-hover);
+  box-shadow: 0 0 24px var(--accent-glow-hover);
 }
 
 /* When2Meet grid styles */
 .time-grid-cell {
   transition: all 0.15s ease;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--grid-cell-border);
   -webkit-tap-highlight-color: transparent;
   touch-action: none;
 }
@@ -78,13 +225,13 @@ body {
 }
 
 .time-grid-cell.available {
-  background: rgba(0, 210, 106, 0.6);
-  border-color: rgba(0, 210, 106, 0.3);
+  background: var(--grid-available-bg);
+  border-color: var(--grid-available-border);
 }
 
 .time-grid-cell.selected {
-  background: rgba(88, 101, 242, 0.7);
-  border-color: rgba(88, 101, 242, 0.4);
+  background: var(--grid-selected-bg);
+  border-color: var(--grid-selected-border);
 }
 
 /* Scrollbar styling */
@@ -97,10 +244,27 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--scrollbar-thumb);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--scrollbar-thumb-hover);
+}
+
+/* Light mode shadows for cards */
+html.light .glass-card {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+html.light .glass-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+html.light .meeting-card {
+  box-shadow: 0 2px 8px rgba(88, 101, 242, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+html.light .meeting-card:hover {
+  box-shadow: 0 4px 16px rgba(88, 101, 242, 0.14);
 }

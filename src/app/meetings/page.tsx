@@ -43,24 +43,28 @@ export default function MeetingsPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2 flex items-center gap-3">
+          <h1 className="text-2xl sm:text-3xl font-bold mb-2 flex items-center gap-3" style={{ color: "var(--text-primary)" }}>
             <IconCalendarEvent className="h-6 w-6 sm:h-7 sm:w-7 text-[#5865f2]" />
             所有會議
           </h1>
-          <p className="text-neutral-400">
+          <p style={{ color: "var(--text-muted)" }}>
             瀏覽所有已建立的會議排程。
           </p>
         </div>
 
         {/* Search */}
         <div className="glass-card p-3 mb-6 flex items-center gap-3">
-          <IconSearch className="h-5 w-5 text-neutral-500 shrink-0" />
+          <IconSearch className="h-5 w-5 shrink-0" style={{ color: "var(--text-faint)" }} />
           <input
             type="text"
             placeholder="搜尋會議名稱或 ID..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="flex-1 bg-transparent text-white placeholder-neutral-500 outline-none text-sm"
+            className="flex-1 outline-none text-sm"
+            style={{
+              background: "var(--input-bg)",
+              color: "var(--input-text)",
+            }}
           />
         </div>
 
@@ -71,7 +75,7 @@ export default function MeetingsPage() {
           </div>
         ) : filtered.length === 0 ? (
           <div className="glass-card p-8 text-center">
-            <p className="text-neutral-400">
+            <p style={{ color: "var(--text-muted)" }}>
               {search ? "找不到符合的會議。" : "目前沒有任何會議。"}
             </p>
           </div>
@@ -90,16 +94,23 @@ export default function MeetingsPage() {
                 >
                   <div>
                     <div className="flex items-center gap-2 mb-1">
-                      <h3 className="text-white font-semibold text-base">
+                      <h3 className="font-semibold text-base" style={{ color: "var(--text-primary)" }}>
                         {meeting.name}
                       </h3>
                       {isActive && (
-                        <span className="px-2 py-0.5 text-[10px] font-medium rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        <span
+                          className="px-2 py-0.5 text-[10px] font-medium rounded-full"
+                          style={{
+                            background: "var(--success-bg-medium)",
+                            color: "var(--success-text)",
+                            border: "1px solid var(--success-border)",
+                          }}
+                        >
                           進行中
                         </span>
                       )}
                     </div>
-                    <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-300">
+                    <div className="flex flex-wrap items-center gap-3 text-sm" style={{ color: "var(--text-secondary)" }}>
                       <span className="flex items-center gap-1">
                         <IconCalendarEvent className="h-3.5 w-3.5 text-[#5865f2]" />
                         {meeting.date_range_start} ~{" "}
@@ -109,7 +120,7 @@ export default function MeetingsPage() {
                       <span className="flex items-center gap-1"><IconUser className="h-3.5 w-3.5 text-[#5865f2]" /> {meeting.creator_username}</span>
                     </div>
                   </div>
-                  <IconExternalLink className="h-5 w-5 text-neutral-400 shrink-0" />
+                  <IconExternalLink className="h-5 w-5 shrink-0" style={{ color: "var(--text-faint)" }} />
                 </Link>
               );
             })}

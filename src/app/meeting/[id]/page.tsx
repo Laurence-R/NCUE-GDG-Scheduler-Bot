@@ -235,8 +235,8 @@ function MeetingContent() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="glass-card p-8 text-center">
-          <h2 className="text-xl font-bold text-white mb-2">找不到會議</h2>
-          <p className="text-neutral-400">
+          <h2 className="text-xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>找不到會議</h2>
+          <p style={{ color: "var(--text-muted)" }}>
             此會議 ID 不存在或已被刪除。
           </p>
         </div>
@@ -248,14 +248,14 @@ function MeetingContent() {
     <div className="min-h-screen p-4 sm:p-6 md:p-10" onMouseUp={handleMouseUp} onTouchEnd={handleTouchEnd}>
       {/* Meeting Header */}
       <div className="max-w-6xl mx-auto mb-6 sm:mb-8">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white mb-2 flex items-center gap-2 sm:gap-3">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold mb-2 flex items-center gap-2 sm:gap-3" style={{ color: "var(--text-primary)" }}>
           <IconCalendarEvent className="h-5 w-5 sm:h-7 sm:w-7 text-[#5865f2] shrink-0" />
           <span className="break-words">{meeting.name}</span>
         </h1>
         {meeting.description && (
-          <p className="text-neutral-400 mb-4">{meeting.description}</p>
+          <p className="mb-4" style={{ color: "var(--text-muted)" }}>{meeting.description}</p>
         )}
-        <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-400">
+        <div className="flex flex-wrap items-center gap-4 text-sm" style={{ color: "var(--text-muted)" }}>
           <span className="flex items-center gap-1.5">
             <IconClock className="h-4 w-4" />
             {meeting.date_range_start} ~ {meeting.date_range_end}
@@ -264,7 +264,7 @@ function MeetingContent() {
             <IconUsers className="h-4 w-4" />
             {responses.length} / {meeting.participants_count} 人已回覆
           </span>
-          <span className="font-mono text-xs text-neutral-500">
+          <span className="font-mono text-xs" style={{ color: "var(--text-faint)" }}>
             {meeting.id}
           </span>
         </div>
@@ -273,30 +273,31 @@ function MeetingContent() {
       {/* Login info */}
       {discordId ? (
         <div className="max-w-6xl mx-auto mb-6">
-          <div className="glass-card p-4 border-[#5865f2]/30 bg-[#5865f2]/10 flex items-center gap-3">
+          <div className="glass-card p-4 flex items-center gap-3" style={{ borderColor: "var(--accent-border-subtle)", background: "var(--accent-bg-subtle)" }}>
             {avatarUrl ? (
               <Image
                 src={avatarUrl}
                 alt={username}
                 width={24}
                 height={24}
-                className="rounded-full shrink-0 ring-2 ring-[#5865f2]/40"
+                className="rounded-full shrink-0 ring-2"
+                style={{ boxShadow: "0 0 0 2px var(--accent-ring)" }}
                 unoptimized
               />
             ) : (
               <IconCheck className="h-5 w-5 text-[#5865f2]" />
             )}
-            <span className="text-neutral-200 text-sm">
-              已登入為 <strong className="text-white">{username}</strong>
+            <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
+              已登入為 <strong style={{ color: "var(--text-primary)" }}>{username}</strong>
               ，點選下方時段標記你的可用時間。
             </span>
           </div>
         </div>
       ) : (
         <div className="max-w-6xl mx-auto mb-6">
-          <div className="glass-card p-4 border-amber-500/30 bg-amber-500/10 flex items-center gap-3">
-            <IconClock className="h-5 w-5 text-amber-400" />
-            <span className="text-neutral-200 text-sm">
+          <div className="glass-card p-4 flex items-center gap-3" style={{ borderColor: "var(--warning-border)", background: "var(--warning-bg)" }}>
+            <IconClock className="h-5 w-5" style={{ color: "var(--warning-text)" }} />
+            <span className="text-sm" style={{ color: "var(--text-secondary)" }}>
               你目前是以訪客身分瀏覽。如需填寫時段，請透過 Discord 指令中的按鈕登入。
             </span>
           </div>
@@ -317,10 +318,11 @@ function MeetingContent() {
               {dates.map((date) => (
                 <div
                   key={date}
-                  className="flex-1 min-w-[40px] sm:min-w-[60px] text-center text-[10px] sm:text-xs font-medium text-neutral-400 pb-2"
+                  className="flex-1 min-w-[40px] sm:min-w-[60px] text-center text-[10px] sm:text-xs font-medium pb-2"
+                  style={{ color: "var(--text-muted)" }}
                 >
                   <div>{formatWeekday(date)}</div>
-                  <div className="text-neutral-500">{formatShortDate(date)}</div>
+                  <div style={{ color: "var(--text-faint)" }}>{formatShortDate(date)}</div>
                 </div>
               ))}
             </div>
@@ -328,7 +330,7 @@ function MeetingContent() {
             {/* Grid rows */}
             {HOURS.map((hour) => (
               <div key={hour} className="flex">
-                <div className="w-10 sm:w-16 shrink-0 text-right pr-1 sm:pr-3 text-[10px] sm:text-xs text-neutral-500 leading-[28px] sm:leading-[32px]">
+                <div className="w-10 sm:w-16 shrink-0 text-right pr-1 sm:pr-3 text-[10px] sm:text-xs leading-[28px] sm:leading-[32px]" style={{ color: "var(--text-faint)" }}>
                   {hour.toString().padStart(2, "0")}:00
                 </div>
                 {dates.map((date) => {
@@ -350,8 +352,8 @@ function MeetingContent() {
                       style={
                         !isSelected && count > 0
                           ? {
-                              background: `rgba(0, 210, 106, ${heatOpacity})`,
-                              borderColor: `rgba(0, 210, 106, ${heatOpacity * 0.5})`,
+                              background: `rgba(var(--grid-heat-color), ${heatOpacity})`,
+                              borderColor: `rgba(var(--grid-heat-color), ${heatOpacity * 0.5})`,
                             }
                           : undefined
                       }
@@ -363,7 +365,7 @@ function MeetingContent() {
                       }}
                     >
                       {count > 0 && !isSelected && (
-                        <span className="text-emerald-300/70">{count}</span>
+                        <span style={{ color: "var(--heat-text)" }}>{count}</span>
                       )}
                     </div>
                   );
@@ -376,17 +378,17 @@ function MeetingContent() {
 
       {/* Legend & Save */}
       <div className="max-w-6xl mx-auto flex flex-col gap-4">
-        <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-[10px] sm:text-xs text-neutral-400">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-6 text-[10px] sm:text-xs" style={{ color: "var(--text-muted)" }}>
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-[#5865f2]/70 border border-[#5865f2]/40" />
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm" style={{ background: "var(--grid-selected-bg)", border: "1px solid var(--accent-border-subtle)" }} />
             <span>你的選擇</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm bg-emerald-500/40 border border-emerald-500/20" />
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm" style={{ background: "rgba(var(--grid-heat-color), 0.4)", border: "1px solid rgba(var(--grid-heat-color), 0.2)" }} />
             <span>其他人可用</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
-            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm border border-white/5 bg-white/[0.02]" />
+            <div className="w-3 h-3 sm:w-4 sm:h-4 rounded-sm" style={{ border: "1px solid var(--grid-cell-border)", background: "var(--grid-cell-bg, transparent)" }} />
             <span>無人選擇</span>
           </div>
         </div>
@@ -410,7 +412,7 @@ function MeetingContent() {
       {/* Responses summary */}
       {responses.length > 0 && (
         <div className="max-w-6xl mx-auto mt-8">
-          <h3 className="text-lg font-semibold text-white mb-3">
+          <h3 className="text-lg font-semibold mb-3" style={{ color: "var(--text-primary)" }}>
             已回覆的成員 ({responses.length})
           </h3>
           <div className="flex flex-wrap gap-2">
@@ -419,7 +421,8 @@ function MeetingContent() {
               return (
                 <div
                   key={r.id}
-                  className="glass-card px-3 py-1.5 text-sm text-neutral-300 flex items-center gap-2"
+                  className="glass-card px-3 py-1.5 text-sm flex items-center gap-2"
+                  style={{ color: "var(--text-secondary)" }}
                 >
                   <Image
                     src={respAvatarUrl}
@@ -430,7 +433,7 @@ function MeetingContent() {
                     unoptimized
                   />
                   <span>{r.username}</span>
-                  <span className="text-xs text-neutral-500">
+                  <span className="text-xs" style={{ color: "var(--text-faint)" }}>
                     {r.available_slots.length} 個時段
                   </span>
                 </div>

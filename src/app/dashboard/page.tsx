@@ -60,9 +60,12 @@ function DashboardContent() {
       {/* Login success banner */}
       {loginSuccess && (
         <div className="max-w-4xl mx-auto mb-6">
-          <div className="glass-card p-4 border-emerald-500/30 bg-emerald-500/10 flex items-center gap-3">
-            <IconCheck className="h-5 w-5 text-emerald-400" />
-            <span className="text-emerald-300 text-sm">
+          <div
+            className="glass-card p-4 flex items-center gap-3"
+            style={{ borderColor: "var(--success-border)", background: "var(--success-bg)" }}
+          >
+            <IconCheck className="h-5 w-5" style={{ color: "var(--success-text)" }} />
+            <span className="text-sm" style={{ color: "var(--success-text-strong)" }}>
               已成功透過 Discord 登入！
             </span>
           </div>
@@ -71,8 +74,8 @@ function DashboardContent() {
 
       {/* Header */}
       <div className="max-w-4xl mx-auto mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">儀表板</h1>
-        <p className="text-neutral-400">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2" style={{ color: "var(--text-primary)" }}>儀表板</h1>
+        <p style={{ color: "var(--text-muted)" }}>
           管理你的會議排程，查看歷史紀錄。
         </p>
       </div>
@@ -81,36 +84,36 @@ function DashboardContent() {
       <div className="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
         <div className="glass-card p-5">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-[#5865f2]/20 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--accent-bg-medium)" }}>
               <IconCalendarEvent className="h-4 w-4 text-[#5865f2]" />
             </div>
-            <span className="text-neutral-400 text-sm">進行中會議</span>
+            <span className="text-sm" style={{ color: "var(--text-muted)" }}>進行中會議</span>
           </div>
-          <span className="text-2xl font-bold text-white">
+          <span className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
             {currentMeetings.length}
           </span>
         </div>
 
         <div className="glass-card p-5">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-emerald-500/20 flex items-center justify-center">
-              <IconUsers className="h-4 w-4 text-emerald-400" />
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--success-bg-medium)" }}>
+              <IconUsers className="h-4 w-4" style={{ color: "var(--success-text)" }} />
             </div>
-            <span className="text-neutral-400 text-sm">總會議數</span>
+            <span className="text-sm" style={{ color: "var(--text-muted)" }}>總會議數</span>
           </div>
-          <span className="text-2xl font-bold text-white">
+          <span className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
             {meetings.length}
           </span>
         </div>
 
         <div className="glass-card p-5">
           <div className="flex items-center gap-3 mb-2">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center">
-              <IconClock className="h-4 w-4 text-amber-400" />
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: "var(--warning-bg-medium)" }}>
+              <IconClock className="h-4 w-4" style={{ color: "var(--warning-text)" }} />
             </div>
-            <span className="text-neutral-400 text-sm">已結束</span>
+            <span className="text-sm" style={{ color: "var(--text-muted)" }}>已結束</span>
           </div>
-          <span className="text-2xl font-bold text-white">
+          <span className="text-2xl font-bold" style={{ color: "var(--text-primary)" }}>
             {pastMeetings.length}
           </span>
         </div>
@@ -118,23 +121,26 @@ function DashboardContent() {
 
       {/* Current Meetings */}
       <div className="max-w-4xl mx-auto mb-8">
-        <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
+        <h2 className="text-xl font-semibold mb-4 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
           <IconCalendarEvent className="h-5 w-5 text-[#5865f2]" />
           進行中的會議
         </h2>
 
         {loading ? (
-          <div className="glass-card p-8 text-center text-neutral-400">
+          <div className="glass-card p-8 text-center" style={{ color: "var(--text-muted)" }}>
             載入中...
           </div>
         ) : currentMeetings.length === 0 ? (
           <div className="glass-card p-8 text-center">
-            <p className="text-neutral-400 mb-4">
+            <p className="mb-4" style={{ color: "var(--text-muted)" }}>
               目前沒有進行中的會議。
             </p>
-            <p className="text-neutral-500 text-sm">
+            <p className="text-sm" style={{ color: "var(--text-faint)" }}>
               在 Discord 中使用{" "}
-              <code className="px-1.5 py-0.5 rounded bg-white/10 text-xs font-mono text-[#5865f2]">
+              <code
+                className="px-1.5 py-0.5 rounded text-xs font-mono"
+                style={{ background: "var(--code-bg)", color: "var(--code-text)" }}
+              >
                 /scheduler meeting
               </code>{" "}
               來建立新的會議排程。
@@ -152,8 +158,8 @@ function DashboardContent() {
       {/* Past Meetings */}
       {pastMeetings.length > 0 && (
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-            <IconClock className="h-5 w-5 text-neutral-400" />
+          <h2 className="text-xl font-semibold mb-4 flex items-center gap-2" style={{ color: "var(--text-primary)" }}>
+            <IconClock className="h-5 w-5" style={{ color: "var(--text-muted)" }} />
             歷史會議
           </h2>
           <div className="space-y-3">
@@ -181,14 +187,14 @@ function MeetingCard({
       }`}
     >
       <div>
-        <h3 className="text-white font-semibold text-base mb-1">{meeting.name}</h3>
-        <div className="flex flex-wrap items-center gap-3 text-sm text-neutral-300">
+        <h3 className="font-semibold text-base mb-1" style={{ color: "var(--text-primary)" }}>{meeting.name}</h3>
+        <div className="flex flex-wrap items-center gap-3 text-sm" style={{ color: "var(--text-secondary)" }}>
           <span className="flex items-center gap-1">
             <IconCalendarEvent className="h-3.5 w-3.5 text-[#5865f2]" />
             {meeting.date_range_start} ~ {meeting.date_range_end}
           </span>
           <span className="flex items-center gap-1"><IconUsers className="h-3.5 w-3.5 text-[#5865f2]" /> {meeting.participants_count} 人</span>
-          <span className="text-neutral-400 font-mono text-xs">
+          <span className="font-mono text-xs" style={{ color: "var(--text-faint)" }}>
             {meeting.id}
           </span>
         </div>
