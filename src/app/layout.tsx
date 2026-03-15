@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { UserProvider } from "@/contexts/user-context";
 import { ThemeProvider } from "@/contexts/theme-context";
+import { AuthToast } from "./_components/auth-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -41,6 +43,9 @@ export default function RootLayout({
       >
         <ThemeProvider>
           <UserProvider>
+            <Suspense>
+              <AuthToast />
+            </Suspense>
             <AppSidebar>{children}</AppSidebar>
           </UserProvider>
         </ThemeProvider>

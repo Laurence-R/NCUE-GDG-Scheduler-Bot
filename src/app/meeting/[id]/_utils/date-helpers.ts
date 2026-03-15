@@ -1,11 +1,40 @@
-/** 可配置的時間範圍（預設 8:00 ~ 22:00） */
+/** 可配置的時間範圍（預設 8:00 ~ 22:00，30 分鐘顆粒度） */
 const HOUR_START = 8;
 const HOUR_END = 22;
 
-export const HOURS = Array.from(
-  { length: HOUR_END - HOUR_START + 1 },
-  (_, i) => i + HOUR_START
+/** 30 分鐘為單位的時間區塊 */
+export interface TimeBlock {
+  hour: number;
+  minute: number; // 0 | 30
+  label: string;  // "08:00" | "08:30"
+}
+
+export const TIME_BLOCKS: TimeBlock[] = Array.from(
+  { length: (HOUR_END - HOUR_START) * 2 },
+  (_, i) => {
+    const hour = HOUR_START + Math.floor(i / 2);
+    const minute = (i % 2) * 30;
+    return {
+      hour,
+      minute,
+      label: `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`,
+    };
+  }
 );
+
+/** 產生 slot key（統一格式） */
+export function slotKey(date: string, hour: number, minute: number): string {
+  return `${date}-${hour}-${minute}`;
+}
+
+/** 從 slot key 解析回結構 */
+export function parseSlotKey(key: string): { date: string; hour: number; minute: number } {
+  const parts = key.split("-");
+  const minute = parseInt(parts.pop()!);
+  const hour = parseInt(parts.pop()!);
+  const date = parts.join("-");
+  return { date, hour, minute };
+}
 
 /** 取得日期範圍內的所有日期 */
 export function getDatesInRange(start: string, end: string): string[] {

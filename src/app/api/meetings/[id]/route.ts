@@ -30,8 +30,14 @@ export async function GET(
     return apiError(responsesError.message, 500);
   }
 
+  const { data: members } = await supabase
+    .from("meeting_members")
+    .select("*")
+    .eq("meeting_id", id);
+
   return apiOk({
     meeting,
     responses: responses ?? [],
+    members: members ?? [],
   });
 }

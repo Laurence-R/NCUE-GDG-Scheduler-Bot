@@ -46,8 +46,8 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
+      router.push("/?logged_out=1");
       setUser(null);
-      router.push("/");
     } catch (err) {
       console.error("Logout failed:", err);
     }

@@ -100,7 +100,7 @@ export default function MeetingsPage() {
                         {meeting.date_range_start} ~{" "}
                         {meeting.date_range_end}
                       </span>
-                      <span className={cn("flex items-center gap-1")}><IconUsers className={cn("h-3.5 w-3.5 text-accent")} /> {meeting.participants_count} 人</span>
+                      <span className={cn("flex items-center gap-1")}><IconUsers className={cn("h-3.5 w-3.5 text-accent")} /> {meeting.creator_username}</span>
                       <span className={cn("flex items-center gap-1")}><IconUser className={cn("h-3.5 w-3.5 text-accent")} /> {meeting.creator_username}</span>
                     </div>
                   </div>

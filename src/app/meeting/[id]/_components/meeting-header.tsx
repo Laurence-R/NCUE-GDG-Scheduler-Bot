@@ -1,4 +1,4 @@
-import { IconCalendarEvent, IconClock, IconUsers } from "@tabler/icons-react";
+import { IconCalendarEvent, IconClock, IconHourglass, IconUsers } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
 import type { Meeting } from "@/lib/supabase/database.types";
 
@@ -30,7 +30,11 @@ export function MeetingHeader({ meeting, responsesCount }: MeetingHeaderProps) {
         </span>
         <span className={cn("flex items-center gap-1.5")}>
           <IconUsers className={cn("h-4 w-4")} />
-          {responsesCount} / {meeting.participants_count} 人已回覆
+          {responsesCount} 人已回覆
+        </span>
+        <span className={cn("flex items-center gap-1.5")}>
+          <IconHourglass className={cn("h-4 w-4")} />
+          {meeting.duration_minutes} 分鐘
         </span>
         <span
           className={cn("font-mono text-xs text-text-faint")}

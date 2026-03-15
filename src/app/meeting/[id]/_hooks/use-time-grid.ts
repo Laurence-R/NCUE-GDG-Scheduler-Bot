@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { slotKey } from "../_utils/date-helpers";
 
 export function useTimeGrid(
   selectedSlots: Set<string>,
@@ -9,8 +10,8 @@ export function useTimeGrid(
   const [dragMode, setDragMode] = useState<"add" | "remove">("add");
 
   const toggleSlot = useCallback(
-    (date: string, hour: number) => {
-      const key = `${date}-${hour}`;
+    (date: string, hour: number, minute: number) => {
+      const key = slotKey(date, hour, minute);
       setSelectedSlots((prev) => {
         const next = new Set(prev);
         if (next.has(key)) {
@@ -26,19 +27,19 @@ export function useTimeGrid(
   );
 
   const handleMouseDown = useCallback(
-    (date: string, hour: number) => {
-      const key = `${date}-${hour}`;
+    (date: string, hour: number, minute: number) => {
+      const key = slotKey(date, hour, minute);
       setIsDragging(true);
       setDragMode(selectedSlots.has(key) ? "remove" : "add");
-      toggleSlot(date, hour);
+      toggleSlot(date, hour, minute);
     },
     [selectedSlots, toggleSlot]
   );
 
   const handleMouseEnter = useCallback(
-    (date: string, hour: number) => {
+    (date: string, hour: number, minute: number) => {
       if (!isDragging) return;
-      const key = `${date}-${hour}`;
+      const key = slotKey(date, hour, minute);
       setSelectedSlots((prev) => {
         const next = new Set(prev);
         if (dragMode === "add") {
@@ -58,11 +59,11 @@ export function useTimeGrid(
   }, []);
 
   const handleTouchStart = useCallback(
-    (date: string, hour: number) => {
-      const key = `${date}-${hour}`;
+    (date: string, hour: number, minute: number) => {
+      const key = slotKey(date, hour, minute);
       setIsDragging(true);
       setDragMode(selectedSlots.has(key) ? "remove" : "add");
-      toggleSlot(date, hour);
+      toggleSlot(date, hour, minute);
     },
     [selectedSlots, toggleSlot]
   );
@@ -75,8 +76,9 @@ export function useTimeGrid(
       if (el && el instanceof HTMLElement) {
         const cellDate = el.dataset.date;
         const cellHour = el.dataset.hour;
-        if (cellDate && cellHour) {
-          const key = `${cellDate}-${cellHour}`;
+        const cellMinute = el.dataset.minute;
+        if (cellDate && cellHour && cellMinute) {
+          const key = slotKey(cellDate, parseInt(cellHour), parseInt(cellMinute));
           setSelectedSlots((prev) => {
             const next = new Set(prev);
             if (dragMode === "add") {

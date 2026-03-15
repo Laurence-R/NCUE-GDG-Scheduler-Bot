@@ -54,26 +54,44 @@ export async function POST(request: NextRequest) {
 }
 
 /**
- * 處理 /scheduler 指令的子指令
+ * 處理 /meeting 指令的子指令
  */
 async function handleApplicationCommand(interaction: Record<string, unknown>) {
   const data = interaction.data as {
     name: string;
-    options?: Array<{ name: string; type: number; options?: Array<{ name: string; value: string }> }>;
+    options?: Array<{
+      name: string;
+      type: number;
+      options?: Array<{ name: string; type: number; value: string }>;
+    }>;
   };
 
-  if (data.name !== "scheduler") {
+  if (data.name !== "meeting") {
     return NextResponse.json({
       type: 4,
       data: { content: `❓ 未知的指令：${data.name}` },
     });
   }
 
-  const subcommand = data.options?.[0]?.name;
+  const subcommandOption = data.options?.[0];
+  const subcommand = subcommandOption?.name;
 
   switch (subcommand) {
-    case "meeting":
-      return handleMeetingCommand();
+    case "build": {
+      // 從子指令選項中取得 role ID（type 8 = ROLE）
+      const roleId = subcommandOption?.options?.find(
+        (o) => o.name === "role" && o.type === 8
+      )?.value;
+
+      if (!roleId) {
+        return NextResponse.json({
+          type: 4,
+          data: { content: "❌ 請指定一個身分組。", flags: 64 },
+        });
+      }
+
+      return handleMeetingCommand(interaction, roleId);
+    }
     case "dashboard":
       return await handleDashboardCommand(interaction);
     default:

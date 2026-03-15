@@ -167,7 +167,6 @@ scripts/
 | id | TEXT | PK, format `MTG-<base36 timestamp>` |
 | name | TEXT | NOT NULL |
 | description | TEXT | nullable |
-| participants_count | INTEGER | default 0 |
 | date_range_start | DATE | NOT NULL |
 | date_range_end | DATE | NOT NULL |
 | creator_discord_id | TEXT | NOT NULL |

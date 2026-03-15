@@ -1,13 +1,11 @@
 "use client";
 
 import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
 import {
   IconCalendarEvent,
   IconUsers,
   IconClock,
   IconExternalLink,
-  IconCheck,
   IconLoader2,
   IconPlus,
   IconBrandDiscord,
@@ -38,8 +36,6 @@ export default function DashboardPage() {
 }
 
 function DashboardContent() {
-  const searchParams = useSearchParams();
-  const loginSuccess = searchParams.get("login") === "success";
   const { meetings, loading, error, refresh: fetchMeetings } = useMeetings();
 
   const now = new Date();
@@ -52,18 +48,6 @@ function DashboardContent() {
 
   return (
     <div className={cn("min-h-screen p-4 sm:p-6 md:p-10")}>
-      {/* Login success banner */}
-      {loginSuccess && (
-        <div className={cn("max-w-3xl mx-auto mb-6")}>
-          <div className={cn("glass-card p-4 flex items-center gap-3 border-success-border bg-success-bg")}>
-            <IconCheck className={cn("h-5 w-5 text-success")} />
-            <span className={cn("text-sm text-success-strong")}>
-              已成功透過 Discord 登入！
-            </span>
-          </div>
-        </div>
-      )}
-
       {/* Header — 精簡 */}
       <div className={cn("max-w-3xl mx-auto mb-8")}>
         <h1 className={cn("text-2xl sm:text-3xl font-bold mb-1 text-text-primary")}>
@@ -226,7 +210,7 @@ function MeetingCard({
           </span>
           <span className={cn("flex items-center gap-1.5")}>
             <IconUsers className={cn("h-3.5 w-3.5 shrink-0")} />
-            {meeting.participants_count} 人
+            {meeting.creator_username}
           </span>
         </div>
       </div>

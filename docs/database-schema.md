@@ -1,174 +1,219 @@
-# ğŸ“¦ è³‡æ–™åº«çµæ§‹èªªæ˜
+# ?“¦ è³‡æ?åº«ç?æ§‹èªª??
 
-> GDG Scheduler Bot ä½¿ç”¨ **Supabase (PostgreSQL)** ä½œç‚ºå¾Œç«¯è³‡æ–™åº«ã€‚  
-> SQL Schema æª”æ¡ˆä½æ–¼ `supabase/schema.sql`ï¼ŒTypeScript å‹åˆ¥å®šç¾©ä½æ–¼ `src/lib/supabase/database.types.ts`ã€‚
+> GDG Scheduler Bot ä½¿ç”¨ **Supabase (PostgreSQL)** ä½œç‚ºå¾Œç«¯è³‡æ?åº«ã€? 
+> SQL Schema æª”æ?ä½æ–¼ `supabase/schema.sql`ï¼ŒTypeScript ?‹åˆ¥å®šç¾©ä½æ–¼ `src/lib/supabase/database.types.ts`??
 
 ---
 
-## è³‡æ–™è¡¨ç¸½è¦½
+## è³‡æ?è¡¨ç¸½è¦?
 
-| è³‡æ–™è¡¨ | èªªæ˜ | ä¸»è¦ç”¨é€” |
+| è³‡æ?è¡?| èªªæ? | ä¸»è??¨é€?|
 |--------|------|----------|
-| `meetings` | æœƒè­°æ’ç¨‹ | å„²å­˜æ¯å ´æœƒè­°çš„åŸºæœ¬è³‡è¨Š |
-| `meeting_responses` | æœƒè­°å›è¦†ï¼ˆå¯ç”¨æ™‚æ®µï¼‰ | æ¯ä½ä½¿ç”¨è€…é‡å°æŸå ´æœƒè­°å¡«å¯«çš„ When2Meet å¯ç”¨æ™‚æ®µ |
+| `meetings` | ?ƒè­°?’ç? | ?²å?æ¯å ´?ƒè­°?„åŸº?¬è?è¨?|
+| `meeting_responses` | ?ƒè­°?è?ï¼ˆå¯?¨æ?æ®µï? | æ¯ä?ä½¿ç”¨?…é?å°æ??´æ?è­°å¡«å¯«ç? When2Meet ?¯ç”¨?‚æ®µ |
+| `meeting_members` | ?ƒè­°?å“¡å¿«ç…§ | è¨˜é?å»ºç??ƒè­°??@role ?„æ??¡å??®ï??¨æ–¼æ¬Šé??§åˆ¶?‡å??‡è¿½è¹?|
 
 ---
 
-## `meetings` â€” æœƒè­°æ’ç¨‹è¡¨
+## `meetings` ???ƒè­°?’ç?è¡?
 
-| æ¬„ä½ | å‹åˆ¥ | å¿…å¡« | é è¨­å€¼ | èªªæ˜ |
+| æ¬„ä? | ?‹åˆ¥ | å¿…å¡« | ?è¨­??| èªªæ? |
 |------|------|------|--------|------|
-| `id` | `TEXT` | âœ… | â€” | **ä¸»éµ**ã€‚æ ¼å¼ç‚º `MTG-{Base36æ™‚é–“æˆ³}`ï¼Œç”± Bot è‡ªå‹•ç”¢ç”Ÿ |
-| `name` | `TEXT` | âœ… | â€” | æœƒè­°åç¨±ï¼ˆä¾‹å¦‚ã€ŒGDG é€±æœƒã€ï¼‰ |
-| `description` | `TEXT` | âŒ | `NULL` | æœƒè­°æè¿° / è­°ç¨‹å‚™è¨» |
-| `participants_count` | `INTEGER` | âœ… | `0` | é è¨ˆåƒèˆ‡äººæ•¸ |
-| `date_range_start` | `DATE` | âœ… | â€” | å¯é¸æ—¥æœŸç¯„åœçš„èµ·å§‹æ—¥ |
-| `date_range_end` | `DATE` | âœ… | â€” | å¯é¸æ—¥æœŸç¯„åœçš„çµæŸæ—¥ |
-| `creator_discord_id` | `TEXT` | âœ… | â€” | ç™¼èµ·äººçš„ Discord User ID |
-| `creator_username` | `TEXT` | âœ… | â€” | ç™¼èµ·äººçš„ Discord é¡¯ç¤ºåç¨± |
-| `guild_id` | `TEXT` | âŒ | `NULL` | ç™¼èµ·è©²æœƒè­°çš„ Discord ä¼ºæœå™¨ ID |
-| `channel_id` | `TEXT` | âŒ | `NULL` | ç™¼èµ·è©²æœƒè­°çš„ Discord é »é“ ID |
-| `created_at` | `TIMESTAMPTZ` | âœ… | `NOW()` | å»ºç«‹æ™‚é–“ï¼ˆè‡ªå‹•ï¼‰ |
-| `updated_at` | `TIMESTAMPTZ` | âœ… | `NOW()` | æ›´æ–°æ™‚é–“ï¼ˆè‡ªå‹•ç”± Trigger ç¶­è­·ï¼‰ |
+| `id` | `TEXT` | ??| ??| **ä¸»éµ**?‚æ ¼å¼ç‚º `MTG-{Base36?‚é??³}`ï¼Œç”± Bot ?ªå??¢ç? |
+| `name` | `TEXT` | ??| ??| ?ƒè­°?ç¨±ï¼ˆä?å¦‚ã€ŒGDG ?±æ??ï? |
+| `description` | `TEXT` | ??| `NULL` | ?ƒè­°?è¿° / è­°ç??™è¨» |
+| `date_range_start` | `DATE` | ??| ??| ?¯é¸?¥æ?ç¯„å??„èµ·å§‹æ—¥ |
+| `date_range_end` | `DATE` | ??| ??| ?¯é¸?¥æ?ç¯„å??„ç??Ÿæ—¥ |
+| `duration_minutes` | `INTEGER` | ??| `60` | ?ƒè­°?‚é•·ï¼ˆå??˜ï?ï¼Œç”¨?¼ç¯©?¸é€???¯ç”¨?‚æ®µ |
+| `creator_discord_id` | `TEXT` | ??| ??| ?¼èµ·äººç? Discord User ID |
+| `creator_username` | `TEXT` | ??| ??| ?¼èµ·äººç? Discord é¡¯ç¤º?ç¨± |
+| `guild_id` | `TEXT` | ??| `NULL` | ?¼èµ·è©²æ?è­°ç? Discord ä¼ºæ???ID |
+| `channel_id` | `TEXT` | ??| `NULL` | ?¼èµ·è©²æ?è­°ç? Discord ?»é? ID |
+| `role_id` | `TEXT` | ??| `NULL` | å»ºç??ƒè­°?‚æ?å®šç? Discord Role IDï¼Œç”¨?¼æ??¡å¿«??|
+| `created_at` | `TIMESTAMPTZ` | ??| `NOW()` | å»ºç??‚é?ï¼ˆè‡ª?•ï? |
+| `updated_at` | `TIMESTAMPTZ` | ??| `NOW()` | ?´æ–°?‚é?ï¼ˆè‡ª?•ç”± Trigger ç¶­è­·ï¼?|
 
-### ç´¢å¼•
+### ç´¢å?
 
-| ç´¢å¼•åç¨± | æ¬„ä½ | ç”¨é€” |
+| ç´¢å??ç¨± | æ¬„ä? | ?¨é€?|
 |----------|------|------|
-| `idx_meetings_creator` | `creator_discord_id` | å¿«é€ŸæŸ¥è©¢æŸä½¿ç”¨è€…å»ºç«‹çš„æœƒè­° |
-| `idx_meetings_created_at` | `created_at DESC` | ä¾å»ºç«‹æ™‚é–“æ’åºæŸ¥è©¢ |
+| `idx_meetings_creator` | `creator_discord_id` | å¿«é€ŸæŸ¥è©¢æ?ä½¿ç”¨?…å»ºç«‹ç??ƒè­° |
+| `idx_meetings_created_at` | `created_at DESC` | ä¾å»ºç«‹æ??“æ?åºæŸ¥è©?|
 
 ---
 
-## `meeting_responses` â€” æœƒè­°å›è¦†è¡¨
+## `meeting_responses` ???ƒè­°?è?è¡?
 
-| æ¬„ä½ | å‹åˆ¥ | å¿…å¡« | é è¨­å€¼ | èªªæ˜ |
+| æ¬„ä? | ?‹åˆ¥ | å¿…å¡« | ?è¨­??| èªªæ? |
 |------|------|------|--------|------|
-| `id` | `UUID` | âœ… | `gen_random_uuid()` | **ä¸»éµ**ï¼Œè‡ªå‹•ç”¢ç”Ÿ UUID |
-| `meeting_id` | `TEXT` | âœ… | â€” | **å¤–éµ** â†’ `meetings(id)`ï¼Œé—œè¯çš„æœƒè­° ID |
-| `discord_id` | `TEXT` | âœ… | â€” | å›è¦†è€…çš„ Discord User ID |
-| `username` | `TEXT` | âœ… | â€” | å›è¦†è€…çš„ Discord é¡¯ç¤ºåç¨± |
-| `available_slots` | `JSONB` | âœ… | `'[]'` | å¯ç”¨æ™‚æ®µé™£åˆ—ï¼ˆè¦‹ä¸‹æ–¹èªªæ˜ï¼‰ |
-| `created_at` | `TIMESTAMPTZ` | âœ… | `NOW()` | å»ºç«‹æ™‚é–“ï¼ˆè‡ªå‹•ï¼‰ |
-| `updated_at` | `TIMESTAMPTZ` | âœ… | `NOW()` | æ›´æ–°æ™‚é–“ï¼ˆè‡ªå‹•ç”± Trigger ç¶­è­·ï¼‰ |
+| `id` | `UUID` | ??| `gen_random_uuid()` | **ä¸»éµ**ï¼Œè‡ª?•ç”¢??UUID |
+| `meeting_id` | `TEXT` | ??| ??| **å¤–éµ** ??`meetings(id)`ï¼Œé??¯ç??ƒè­° ID |
+| `discord_id` | `TEXT` | ??| ??| ?è??…ç? Discord User ID |
+| `username` | `TEXT` | ??| ??| ?è??…ç? Discord é¡¯ç¤º?ç¨± |
+| `available_slots` | `JSONB` | ??| `'[]'` | ?¯ç”¨?‚æ®µ???ï¼ˆè?ä¸‹æ–¹èªªæ?ï¼?|
+| `created_at` | `TIMESTAMPTZ` | ??| `NOW()` | å»ºç??‚é?ï¼ˆè‡ª?•ï? |
+| `updated_at` | `TIMESTAMPTZ` | ??| `NOW()` | ?´æ–°?‚é?ï¼ˆè‡ª?•ç”± Trigger ç¶­è­·ï¼?|
 
-### å”¯ä¸€ç´„æŸ
+### ?¯ä?ç´„æ?
 
 ```
 UNIQUE(meeting_id, discord_id)
 ```
 
-æ¯ä½ä½¿ç”¨è€…é‡å°æ¯å ´æœƒè­°åªèƒ½æœ‰ä¸€ç­†å›è¦†ï¼ˆé‡è¤‡æäº¤æœƒ upsert è¦†è“‹ï¼‰ã€‚
+æ¯ä?ä½¿ç”¨?…é?å°æ??´æ?è­°åª?½æ?ä¸€ç­†å?è¦†ï??è??äº¤??upsert è¦†è?ï¼‰ã€?
 
-### ç´¢å¼•
+### ç´¢å?
 
-| ç´¢å¼•åç¨± | æ¬„ä½ | ç”¨é€” |
+| ç´¢å??ç¨± | æ¬„ä? | ?¨é€?|
 |----------|------|------|
-| `idx_responses_meeting` | `meeting_id` | å¿«é€ŸæŸ¥è©¢æŸå ´æœƒè­°çš„æ‰€æœ‰å›è¦† |
-| `idx_responses_discord` | `discord_id` | å¿«é€ŸæŸ¥è©¢æŸä½¿ç”¨è€…çš„æ‰€æœ‰å›è¦† |
+| `idx_responses_meeting` | `meeting_id` | å¿«é€ŸæŸ¥è©¢æ??´æ?è­°ç??€?‰å?è¦?|
+| `idx_responses_discord` | `discord_id` | å¿«é€ŸæŸ¥è©¢æ?ä½¿ç”¨?…ç??€?‰å?è¦?|
 
 ---
 
-## `available_slots` JSONB æ ¼å¼
+## `available_slots` JSONB ?¼å?
 
-`available_slots` æ¬„ä½å„²å­˜çš„æ˜¯ä¸€å€‹ `TimeSlot[]` é™£åˆ—ï¼Œæ¯å€‹å…ƒç´ ä»£è¡¨ä¸€å€‹ã€Œä¸€å°æ™‚ã€çš„å¯ç”¨æ™‚æ®µï¼š
+`available_slots` æ¬„ä??²å??„æ˜¯ä¸€??`TimeSlot[]` ???ï¼Œæ??‹å?ç´ ä»£è¡¨ä??‹ã€?0 ?†é??ç??¯ç”¨?‚æ®µï¼?
 
 ```typescript
 interface TimeSlot {
-  date: string;  // æ—¥æœŸï¼Œæ ¼å¼ "YYYY-MM-DD"ï¼ˆä¾‹å¦‚ "2025-01-20"ï¼‰
-  hour: number;  // å°æ™‚ï¼Œç¯„åœ 8~21ï¼ˆä»£è¡¨ 08:00~09:00 åˆ° 21:00~22:00ï¼‰
+  date: string;   // ?¥æ?ï¼Œæ ¼å¼?"YYYY-MM-DD"ï¼ˆä?å¦?"2025-01-20"ï¼?
+  hour: number;   // å°æ?ï¼Œç???8~21ï¼ˆä»£è¡?08:00 ??21:30ï¼?
+  minute: number; // ?†é?ï¼? ??30
 }
 ```
 
-### ç¯„ä¾‹
+### ç¯„ä?
 
 ```json
 [
-  { "date": "2025-01-20", "hour": 9 },
-  { "date": "2025-01-20", "hour": 10 },
-  { "date": "2025-01-20", "hour": 14 },
-  { "date": "2025-01-21", "hour": 9 },
-  { "date": "2025-01-21", "hour": 15 }
+  { "date": "2025-01-20", "hour": 9, "minute": 0 },
+  { "date": "2025-01-20", "hour": 9, "minute": 30 },
+  { "date": "2025-01-20", "hour": 10, "minute": 0 },
+  { "date": "2025-01-20", "hour": 14, "minute": 30 },
+  { "date": "2025-01-21", "hour": 9, "minute": 0 },
+  { "date": "2025-01-21", "hour": 15, "minute": 30 }
 ]
 ```
 
-ä¸Šé¢è¡¨ç¤ºè©²ä½¿ç”¨è€…åœ¨ï¼š
-- 1/20 çš„ 09:00~11:00ã€14:00~15:00 æœ‰ç©º
-- 1/21 çš„ 09:00~10:00ã€15:00~16:00 æœ‰ç©º
+ä¸Šé¢è¡¨ç¤ºè©²ä½¿?¨è€…åœ¨ï¼?
+- 1/20 ??09:00~10:30??4:30~15:00 ?‰ç©º
+- 1/21 ??09:00~09:30??5:30~16:00 ?‰ç©º
+
+---
+
+## `meeting_members` ???ƒè­°?å“¡å¿«ç…§è¡?
+
+å»ºç??ƒè­°?‚ï?Bot ?ƒå??‡å? `@role` ä¸‹ç??€?‰æ??¡å¯«?¥æ­¤è¡¨ï?ä½œç‚ºæ¬Šé??§åˆ¶?‡å??‡è¿½è¹¤ç?ä¾æ???
+
+| æ¬„ä? | ?‹åˆ¥ | å¿…å¡« | ?è¨­??| èªªæ? |
+|------|------|------|--------|------|
+| `id` | `UUID` | ??| `gen_random_uuid()` | **ä¸»éµ**ï¼Œè‡ª?•ç”¢??UUID |
+| `meeting_id` | `TEXT` | ??| ??| **å¤–éµ** ??`meetings(id)`ï¼Œé??¯ç??ƒè­° ID |
+| `discord_id` | `TEXT` | ??| ??| ?å“¡??Discord User ID |
+| `username` | `TEXT` | ??| ??| ?å“¡??Discord é¡¯ç¤º?ç¨± |
+| `avatar_hash` | `TEXT` | ??| `NULL` | Discord å¤§é ­è²?hash |
+| `is_organizer` | `BOOLEAN` | ??| `false` | ?¯å¦?ºæ?è­°ç™¼èµ·äºº |
+| `filled_at` | `TIMESTAMPTZ` | ??| `NULL` | ?å“¡å¡«å¯«?è??„æ??“ï?`NULL` è¡¨ç¤ºå°šæœªå¡«å¯« |
+
+### ?¯ä?ç´„æ?
+
+```
+UNIQUE(meeting_id, discord_id)
+```
+
+æ¯ä??å“¡?¨æ??´æ?è­°åª?½æ?ä¸€ç­†è??„ã€?
+
+### ç´¢å?
+
+| ç´¢å??ç¨± | æ¬„ä? | ?¨é€?|
+|----------|------|------|
+| `idx_members_meeting` | `meeting_id` | å¿«é€ŸæŸ¥è©¢æ??´æ?è­°ç??€?‰æ???|
+| `idx_members_discord` | `discord_id` | å¿«é€ŸæŸ¥è©¢æ?ä½¿ç”¨?…è¢«? å…¥?„æ??‰æ?è­?|
 
 ---
 
 ## Row Level Security (RLS)
 
-å…©å¼µè³‡æ–™è¡¨éƒ½å•Ÿç”¨äº† RLSï¼Œæ”¿ç­–å¦‚ä¸‹ï¼š
+?©å¼µè³‡æ?è¡¨éƒ½?Ÿç”¨äº?RLSï¼Œæ”¿ç­–å?ä¸‹ï?
 
-| è³‡æ–™è¡¨ | æ“ä½œ | æ”¿ç­–åç¨± | è¦å‰‡ | èªªæ˜ |
+| è³‡æ?è¡?| ?ä? | ?¿ç??ç¨± | è¦å? | èªªæ? |
 |--------|------|----------|------|------|
-| `meetings` | `SELECT` | `meetings_select_all` | `USING (true)` | æ‰€æœ‰äººå¯è®€å–æ‰€æœ‰æœƒè­° |
-| `meetings` | `INSERT` | `meetings_insert_anon` | `WITH CHECK (true)` | å…è¨±é€é API æ–°å¢æœƒè­° |
-| `meeting_responses` | `SELECT` | `responses_select_all` | `USING (true)` | æ‰€æœ‰äººå¯è®€å–æ‰€æœ‰å›è¦† |
-| `meeting_responses` | `INSERT` | `responses_insert_anon` | `WITH CHECK (true)` | å…è¨±é€é API æ–°å¢å›è¦† |
-| `meeting_responses` | `UPDATE` | `responses_update_own` | `USING (true)` | å…è¨±æ›´æ–°å›è¦†ï¼ˆupsert ç”¨ï¼‰ |
+| `meetings` | `SELECT` | `meetings_select_all` | `USING (true)` | ?€?‰äºº?¯è??–æ??‰æ?è­?|
+| `meetings` | `INSERT` | `meetings_insert_anon` | `WITH CHECK (true)` | ?è¨±?é? API ?°å??ƒè­° |
+| `meeting_responses` | `SELECT` | `responses_select_all` | `USING (true)` | ?€?‰äºº?¯è??–æ??‰å?è¦?|
+| `meeting_responses` | `INSERT` | `responses_insert_anon` | `WITH CHECK (true)` | ?è¨±?é? API ?°å??è? |
+| `meeting_responses` | `UPDATE` | `responses_update_own` | `USING (true)` | ?è¨±?´æ–°?è?ï¼ˆupsert ?¨ï? |
+| `meeting_members` | `SELECT` | `members_select_all` | `USING (true)` | ?€?‰äºº?¯è??–æ??¡å?è¡?|
+| `meeting_members` | `INSERT` | `members_insert_anon` | `WITH CHECK (true)` | ?è¨±?é? API ?°å??å“¡ |
+| `meeting_members` | `UPDATE` | `members_update_anon` | `USING (true)` | ?è¨±?´æ–°?å“¡è³‡è?ï¼ˆå? filled_atï¼?|
 
-> **å‚™è¨»**ï¼šç›®å‰ RLS æ”¿ç­–è¼ƒç‚ºå¯¬é¬†ï¼ˆå…¨éƒ¨å…è¨±ï¼‰ï¼Œæ˜¯å› ç‚ºæ¬Šé™æ§åˆ¶ç”± API Route å±¤è™•ç†ã€‚æœªä¾†å¯ä¾éœ€æ±‚æ”¶ç·Šã€‚
+> **?™è¨»**ï¼šç›®??RLS ?¿ç?è¼ƒç‚ºå¯¬é?ï¼ˆå…¨?¨å?è¨±ï?ï¼Œæ˜¯? ç‚ºæ¬Šé??§åˆ¶??API Route å±¤è??†ã€‚æœªä¾†å¯ä¾é?æ±‚æ”¶ç·Šã€?
 
 ---
 
 ## Trigger
 
-| è§¸ç™¼å™¨åç¨± | è³‡æ–™è¡¨ | äº‹ä»¶ | å‡½å¼ | èªªæ˜ |
+| è§¸ç™¼?¨å?ç¨?| è³‡æ?è¡?| äº‹ä»¶ | ?½å? | èªªæ? |
 |------------|--------|------|------|------|
-| `meetings_updated_at` | `meetings` | `BEFORE UPDATE` | `update_updated_at()` | æ¯æ¬¡æ›´æ–°æ™‚è‡ªå‹•è¨­å®š `updated_at = NOW()` |
-| `meeting_responses_updated_at` | `meeting_responses` | `BEFORE UPDATE` | `update_updated_at()` | æ¯æ¬¡æ›´æ–°æ™‚è‡ªå‹•è¨­å®š `updated_at = NOW()` |
+| `meetings_updated_at` | `meetings` | `BEFORE UPDATE` | `update_updated_at()` | æ¯æ¬¡?´æ–°?‚è‡ª?•è¨­å®?`updated_at = NOW()` |
+| `meeting_responses_updated_at` | `meeting_responses` | `BEFORE UPDATE` | `update_updated_at()` | æ¯æ¬¡?´æ–°?‚è‡ª?•è¨­å®?`updated_at = NOW()` |
+
+> `meeting_members` è¡¨ç„¡ `updated_at` æ¬„ä?ï¼Œä??€ trigger??
 
 ---
 
-## ğŸ—ºï¸ è³‡æ–™é—œè¯åœ–
+## ?—ºï¸?è³‡æ??œè¯??
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚       meetings          â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚ id (PK)                 â”‚â—„â”€â”€â”€â”€â”€â”€â”
-â”‚ name                    â”‚       â”‚
-â”‚ description             â”‚       â”‚
-â”‚ participants_count      â”‚       â”‚
-â”‚ date_range_start        â”‚       â”‚
-â”‚ date_range_end          â”‚       â”‚
-â”‚ creator_discord_id      â”‚       â”‚
-â”‚ creator_username        â”‚       â”‚
-â”‚ guild_id                â”‚       â”‚
-â”‚ channel_id              â”‚       â”‚
-â”‚ created_at              â”‚       â”‚
-â”‚ updated_at              â”‚       â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜       â”‚
-                                  â”‚ FK (ON DELETE CASCADE)
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”       â”‚
-â”‚   meeting_responses     â”‚       â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤       â”‚
-â”‚ id (PK, UUID)           â”‚       â”‚
-â”‚ meeting_id (FK) â”€â”€â”€â”€â”€â”€â”€â”€â”‚â”€â”€â”€â”€â”€â”€â”€â”˜
-â”‚ discord_id              â”‚
-â”‚ username                â”‚
-â”‚ available_slots (JSONB) â”‚
-â”‚ created_at              â”‚
-â”‚ updated_at              â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚ UNIQUE(meeting_id,      â”‚
-â”‚        discord_id)      â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+?Œâ??€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€??
+??      meetings          ??
+?œâ??€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€??
+??id (PK)                 ?‚â??€?€?€?€?€?€?¬â??€?€?€?€?€?€?€?€?€??
+??name                    ??      ??         ??
+??description             ??      ??         ??
+??participants_count      ??      ??         ??
+??date_range_start        ??      ??         ??
+??date_range_end          ??      ??         ??
+??duration_minutes        ??      ??         ??
+??creator_discord_id      ??      ??         ??
+??creator_username        ??      ??         ??
+??guild_id                ??      ??         ??
+??channel_id              ??      ??         ??
+??role_id                 ??      ??         ??
+??created_at              ??      ??         ??
+??updated_at              ??      ??         ??
+?”â??€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€??      ??         ??
+                                  ??         ??FK (ON DELETE CASCADE)
+?Œâ??€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€??      ??         ??
+??  meeting_responses     ??      ??   ?Œâ??€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€??
+?œâ??€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€??      ??   ??   meeting_members      ??
+??id (PK, UUID)           ??      ??   ?œâ??€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€??
+??meeting_id (FK) ?€?€?€?€?€?€?€?€?‚â??€?€?€?€?€?€??   ??id (PK, UUID)           ??
+??discord_id              ??           ??meeting_id (FK) ?€?€?€?€?€?€?€?€??
+??username                ??           ??discord_id              ??
+??available_slots (JSONB) ??           ??username                ??
+??created_at              ??           ??avatar_hash             ??
+??updated_at              ??           ??is_organizer            ??
+?œâ??€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€??           ??filled_at               ??
+??UNIQUE(meeting_id,      ??           ?œâ??€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€??
+??       discord_id)      ??           ??UNIQUE(meeting_id,      ??
+?”â??€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€??           ??       discord_id)      ??
+                                       ?”â??€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€?€??
 ```
 
 ---
 
-## TypeScript ä¾¿æ·å‹åˆ¥
+## TypeScript ä¾¿æ·?‹åˆ¥
 
-å®šç¾©æ–¼ `src/lib/supabase/database.types.ts`ï¼š
+å®šç¾©??`src/lib/supabase/database.types.ts`ï¼?
 
 ```typescript
-type Meeting              // meetings è¡¨çš„å®Œæ•´ Rowï¼ˆæŸ¥è©¢çµæœï¼‰
-type MeetingInsert        // meetings è¡¨çš„ Insert å‹åˆ¥ï¼ˆæ–°å¢æ™‚ä½¿ç”¨ï¼‰
-type MeetingResponse      // meeting_responses è¡¨çš„å®Œæ•´ Row
-type MeetingResponseInsert // meeting_responses è¡¨çš„ Insert å‹åˆ¥
-type TimeSlot             // { date: string; hour: number }
+type Meeting               // meetings è¡¨ç?å®Œæ•´ Rowï¼ˆæŸ¥è©¢ç??œï?
+type MeetingInsert         // meetings è¡¨ç? Insert ?‹åˆ¥ï¼ˆæ–°å¢æ?ä½¿ç”¨ï¼?
+type MeetingResponse       // meeting_responses è¡¨ç?å®Œæ•´ Row
+type MeetingResponseInsert // meeting_responses è¡¨ç? Insert ?‹åˆ¥
+type MeetingMember         // meeting_members è¡¨ç?å®Œæ•´ Row
+type MeetingMemberInsert   // meeting_members è¡¨ç? Insert ?‹åˆ¥
+type TimeSlot              // { date: string; hour: number; minute: number }
 ```

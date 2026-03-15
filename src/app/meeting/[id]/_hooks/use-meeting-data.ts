@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
-import type { Meeting, MeetingResponse, TimeSlot } from "@/lib/supabase/database.types";
+import type { Meeting, MeetingResponse, MeetingMember, TimeSlot } from "@/lib/supabase/database.types";
+import { slotKey } from "../_utils/date-helpers";
 
 export function useMeetingData(meetingId: string, discordId: string) {
   const [meeting, setMeeting] = useState<Meeting | null>(null);
   const [responses, setResponses] = useState<MeetingResponse[]>([]);
+  const [members, setMembers] = useState<MeetingMember[]>([]);
   const [selectedSlots, setSelectedSlots] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
 
@@ -15,6 +17,7 @@ export function useMeetingData(meetingId: string, discordId: string) {
         const json = await res.json();
         setMeeting(json.data?.meeting ?? null);
         setResponses(json.data?.responses ?? []);
+        setMembers(json.data?.members ?? []);
 
         // 如果使用者已有回覆，載入已選擇的時段
         if (discordId) {
@@ -24,7 +27,7 @@ export function useMeetingData(meetingId: string, discordId: string) {
           if (existing) {
             const slots = new Set<string>(
               existing.available_slots.map(
-                (s: TimeSlot) => `${s.date}-${s.hour}`
+                (s: TimeSlot) => slotKey(s.date, s.hour, s.minute ?? 0)
               )
             );
             setSelectedSlots(slots);
@@ -39,5 +42,5 @@ export function useMeetingData(meetingId: string, discordId: string) {
     fetchMeeting();
   }, [meetingId, discordId]);
 
-  return { meeting, responses, setResponses, selectedSlots, setSelectedSlots, loading };
+  return { meeting, responses, setResponses, members, selectedSlots, setSelectedSlots, loading };
 }

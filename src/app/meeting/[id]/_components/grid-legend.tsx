@@ -3,9 +3,10 @@ import { cn } from "@/lib/utils";
 
 interface GridLegendProps {
   avatarUrl: string;
+  hasOrganizer: boolean;
 }
 
-export function GridLegend({ avatarUrl }: GridLegendProps) {
+export function GridLegend({ avatarUrl, hasOrganizer }: GridLegendProps) {
   return (
     <div
       className={cn("flex flex-wrap items-center gap-3 sm:gap-6 text-[10px] sm:text-xs text-text-muted")}
@@ -44,6 +45,18 @@ export function GridLegend({ avatarUrl }: GridLegendProps) {
         />
         <span>其他人可用</span>
       </div>
+      {hasOrganizer && (
+        <div className={cn("flex items-center gap-1.5 sm:gap-2")}>
+          <div
+            className={cn("w-3 h-3 sm:w-4 sm:h-4 rounded-sm ring-1 ring-amber-400/70")}
+            style={{
+              background: "rgba(var(--grid-heat-color), 0.4)",
+              border: "1px solid rgba(var(--grid-heat-color), 0.2)",
+            }}
+          />
+          <span>發起人可用</span>
+        </div>
+      )}
       <div className={cn("flex items-center gap-1.5 sm:gap-2")}>
         <div
           className={cn("w-3 h-3 sm:w-4 sm:h-4 rounded-sm border border-grid-cell-border bg-transparent")}

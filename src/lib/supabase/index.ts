@@ -5,5 +5,7 @@ export type {
   MeetingInsert,
   MeetingResponse,
   MeetingResponseInsert,
+  MeetingMember,
+  MeetingMemberInsert,
   TimeSlot,
 } from "./database.types";

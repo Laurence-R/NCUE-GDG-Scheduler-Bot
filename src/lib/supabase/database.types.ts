@@ -1,34 +1,7 @@
 /**
  * Supabase Database 型別定義
  *
- * 對應的 SQL schema：
- *
- * CREATE TABLE meetings (
- *   id TEXT PRIMARY KEY,
- *   name TEXT NOT NULL,
- *   description TEXT,
- *   participants_count INTEGER NOT NULL DEFAULT 0,
- *   date_range_start DATE NOT NULL,
- *   date_range_end DATE NOT NULL,
- *   creator_discord_id TEXT NOT NULL,
- *   creator_username TEXT NOT NULL,
- *   guild_id TEXT,
- *   channel_id TEXT,
- *   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
- *   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
- * );
- *
- * CREATE TABLE meeting_responses (
- *   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
- *   meeting_id TEXT NOT NULL REFERENCES meetings(id) ON DELETE CASCADE,
- *   discord_id TEXT NOT NULL,
- *   username TEXT NOT NULL,
- *   avatar_hash TEXT,
- *   available_slots JSONB NOT NULL DEFAULT '[]',
- *   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
- *   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
- *   UNIQUE(meeting_id, discord_id)
- * );
+ * 對應 SQL schema 請參閱 supabase/schema.sql
  */
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -42,11 +15,12 @@ export type Database = {
           id: string;
           name: string;
           description: string | null;
-          participants_count: number;
+          duration_minutes: number;
           date_range_start: string;
           date_range_end: string;
           creator_discord_id: string;
           creator_username: string;
+          role_id: string | null;
           guild_id: string | null;
           channel_id: string | null;
           created_at: string;
@@ -56,11 +30,12 @@ export type Database = {
           id: string;
           name: string;
           description?: string | null;
-          participants_count?: number;
+          duration_minutes?: number;
           date_range_start: string;
           date_range_end: string;
           creator_discord_id: string;
           creator_username: string;
+          role_id?: string | null;
           guild_id?: string | null;
           channel_id?: string | null;
           created_at?: string;
@@ -70,11 +45,12 @@ export type Database = {
           id?: string;
           name?: string;
           description?: string | null;
-          participants_count?: number;
+          duration_minutes?: number;
           date_range_start?: string;
           date_range_end?: string;
           creator_discord_id?: string;
           creator_username?: string;
+          role_id?: string | null;
           guild_id?: string | null;
           channel_id?: string | null;
           updated_at?: string;
@@ -120,6 +96,45 @@ export type Database = {
           },
         ];
       };
+      meeting_members: {
+        Row: {
+          id: string;
+          meeting_id: string;
+          discord_id: string;
+          username: string;
+          avatar_hash: string | null;
+          is_organizer: boolean;
+          filled_at: string | null;
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          meeting_id: string;
+          discord_id: string;
+          username: string;
+          avatar_hash?: string | null;
+          is_organizer?: boolean;
+          filled_at?: string | null;
+          created_at?: string;
+        };
+        Update: {
+          meeting_id?: string;
+          discord_id?: string;
+          username?: string;
+          avatar_hash?: string | null;
+          is_organizer?: boolean;
+          filled_at?: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "meeting_members_meeting_id_fkey";
+            columns: ["meeting_id"];
+            isOneToOne: false;
+            referencedRelation: "meetings";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: Record<string, never>;
     Functions: Record<string, never>;
@@ -129,13 +144,15 @@ export type Database = {
 };
 
 /**
- * 時段型別 — When2Meet 風格的可用時段
+ * 時段型別 — When2Meet 風格的可用時段（30 分鐘顆粒度）
  * date: "2025-01-20"
- * hour: 9 (= 09:00 ~ 10:00)
+ * hour: 9 (0~23)
+ * minute: 0 | 30
  */
 export interface TimeSlot {
   date: string;
   hour: number;
+  minute: number;
 }
 
 // 便捷型別
@@ -143,3 +160,5 @@ export type Meeting = Database["public"]["Tables"]["meetings"]["Row"];
 export type MeetingInsert = Database["public"]["Tables"]["meetings"]["Insert"];
 export type MeetingResponse = Database["public"]["Tables"]["meeting_responses"]["Row"];
 export type MeetingResponseInsert = Database["public"]["Tables"]["meeting_responses"]["Insert"];
+export type MeetingMember = Database["public"]["Tables"]["meeting_members"]["Row"];
+export type MeetingMemberInsert = Database["public"]["Tables"]["meeting_members"]["Insert"];
