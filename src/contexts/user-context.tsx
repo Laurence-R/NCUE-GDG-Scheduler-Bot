@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
+import { useRouter } from "next/navigation";
 
 export interface UserInfo {
   id: string;
@@ -28,6 +29,7 @@ export const useUser = () => useContext(UserContext);
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<UserInfo | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const refresh = useCallback(async () => {
     try {
@@ -45,10 +47,11 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
       setUser(null);
+      router.push("/");
     } catch (err) {
       console.error("Logout failed:", err);
     }
-  }, []);
+  }, [router]);
 
   useEffect(() => {
     refresh();
