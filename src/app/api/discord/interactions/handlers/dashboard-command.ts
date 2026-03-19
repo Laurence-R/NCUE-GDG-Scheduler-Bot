@@ -1,36 +1,15 @@
 import { NextResponse } from "next/server";
-import { createSignedState } from "@/lib/oauth-state";
 
 /**
- * /scheduler dashboard → 回傳帶按鈕的 Embed（type: 4）
+ * /meeting dashboard → 回傳帶按鈕的 Embed（type: 4）
  */
 export async function handleDashboardCommand(
   interaction: Record<string, unknown>
 ) {
-  const clientId = process.env.DISCORD_APP_ID;
-  const redirectUri = process.env.DISCORD_REDIRECT_URI;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-  if (!clientId || !redirectUri) {
-    return NextResponse.json({
-      type: 4,
-      data: {
-        content: "❌ Bot 尚未完成設定，請聯繫管理員。",
-        flags: 64,
-      },
-    });
-  }
-
-  // 產生 HMAC 簽章的 state
-  const state = await createSignedState({ redirect: "dashboard" });
-
-  const oauthUrl =
-    `https://discord.com/oauth2/authorize` +
-    `?response_type=code` +
-    `&client_id=${clientId}` +
-    `&scope=identify` +
-    `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-    `&state=${encodeURIComponent(state)}` +
-    `&prompt=none`;
+  // 按鈕連結到 /api/auth/discord，每次點擊都即時產生新的 signed state（避免 10 分鐘過期問題）
+  const oauthUrl = `${appUrl}/api/auth/discord?redirect=dashboard`;
 
   return NextResponse.json({
     type: 4,

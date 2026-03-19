@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/lib/supabase";
-import { createSignedState } from "@/lib/oauth-state";
 import type {
   MeetingInsert,
   MeetingMemberInsert,
@@ -239,20 +238,9 @@ export async function handleModalSubmit(
   }
 
   // ── 回傳 Embed ──────────────────────────────────────────
-  let fillUrl: string;
-  if (clientId && redirectUri) {
-    const state = await createSignedState({ redirect: meetingId });
-    fillUrl =
-      `https://discord.com/oauth2/authorize` +
-      `?response_type=code` +
-      `&client_id=${clientId}` +
-      `&scope=identify` +
-      `&redirect_uri=${encodeURIComponent(redirectUri)}` +
-      `&state=${encodeURIComponent(state)}` +
-      `&prompt=none`;
-  } else {
-    fillUrl = `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/meeting/${meetingId}`;
-  }
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  // 按鈕連結到 /api/auth/discord，每次點擊都即時產生新的 signed state（避免 10 分鐘過期問題）
+  const fillUrl = `${appUrl}/api/auth/discord?redirect=${meetingId}`;
 
   return NextResponse.json({
     type: 4,
