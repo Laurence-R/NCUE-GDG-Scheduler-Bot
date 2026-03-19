@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   IconCalendarEvent,
@@ -8,10 +10,13 @@ import {
   IconTerminal2,
   IconMouse,
   IconChartBar,
+  IconLayoutDashboard,
 } from "@tabler/icons-react";
 import { cn } from "@/lib/utils";
+import { useUser } from "@/contexts/user-context";
 
 export default function Home() {
+  const { user, loading } = useUser();
   return (
     <div className={cn("min-h-screen p-4 sm:p-6 md:p-10")}>
       {/* Hero — 直接、有個性 */}
@@ -37,20 +42,25 @@ export default function Home() {
         </p>
 
         <div className={cn("flex flex-col sm:flex-row gap-3")}>
-          <Link
-            href="/dashboard"
-            className={cn("group flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover text-accent-foreground font-semibold py-3 px-7 rounded-xl transition-all duration-200 cursor-pointer")}
-          >
-            開啟儀表板
-            <IconArrowRight className={cn("h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5")} />
-          </Link>
-          <Link
-            href="/api/auth/discord"
-            className={cn("flex items-center justify-center gap-2 glass-card px-7 py-3 font-semibold transition-all duration-200 cursor-pointer text-text-primary rounded-xl")}
-          >
-            <IconBrandDiscord className={cn("h-5 w-5 text-accent")} />
-            以 Discord 登入
-          </Link>
+          {!loading && user ? (
+            <Link
+              href="/dashboard"
+              className={cn("group flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover text-accent-foreground font-semibold py-3 px-7 rounded-xl transition-all duration-200 cursor-pointer")}
+            >
+              <IconLayoutDashboard className={cn("h-5 w-5")} />
+              開啟儀表板
+              <IconArrowRight className={cn("h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5")} />
+            </Link>
+          ) : (
+            <Link
+              href="/api/auth/discord"
+              className={cn("group flex items-center justify-center gap-2 bg-accent hover:bg-accent-hover text-accent-foreground font-semibold py-3 px-7 rounded-xl transition-all duration-200 cursor-pointer")}
+            >
+              <IconBrandDiscord className={cn("h-5 w-5")} />
+              以 Discord 登入
+              <IconArrowRight className={cn("h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5")} />
+            </Link>
+          )}
         </div>
       </section>
 
@@ -79,9 +89,9 @@ export default function Home() {
               <p className={cn("text-sm leading-relaxed text-text-muted")}>
                 使用{" "}
                 <code className={cn("px-1.5 py-0.5 rounded text-xs font-mono bg-code-bg text-code")}>
-                  /scheduler meeting
+                  /meeting build @身分組
                 </code>
-                ，填寫名稱、人數和日期範圍，Bot 會直接建立並推送到頻道。
+                ，選擇要邀請的身分組，填寫名稱、日期範圍與時長，Bot 會直接建立並推送到頻道。
               </p>
             </div>
           </div>

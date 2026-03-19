@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS meetings (
   creator_discord_id TEXT NOT NULL,
   creator_username TEXT NOT NULL,
   role_id TEXT,
+  role_name TEXT,
   guild_id TEXT,
   channel_id TEXT,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),

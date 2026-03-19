@@ -28,6 +28,9 @@ export function handleMeetingCommand(
   };
   const resolvedRoles = guild.resolved?.roles ?? {};
 
+  // 被選擇的目標角色名稱
+  const targetRoleName = resolvedRoles[roleId]?.name ?? "unknown";
+
   // 檢查發起人是否擁有 ALLOWED_ROLE_NAMES 中任一角色
   const hasPermission = userRoles.some((rId) => {
     const roleName = resolvedRoles[rId]?.name?.toLowerCase();
@@ -44,11 +47,11 @@ export function handleMeetingCommand(
     });
   }
 
-  // 將 roleId 嵌入 Modal custom_id 以便 submit 時取得
+  // 將 roleId 與 roleName 嵌入 Modal custom_id 以便 submit 時取得
   return NextResponse.json({
     type: 9, // MODAL
     data: {
-      custom_id: `meeting_build_modal:${roleId}`,
+      custom_id: `meeting_build_modal:${roleId}:${targetRoleName}`,
       title: "建立會議排程",
       components: [
         {

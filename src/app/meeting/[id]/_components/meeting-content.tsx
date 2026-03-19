@@ -17,6 +17,7 @@ import { GridLegend } from "./grid-legend";
 import { SaveButton } from "./save-button";
 import { ResponsesSummary } from "./responses-summary";
 import { ToastNotification } from "./toast-notification";
+import { UsageGuide } from "./usage-guide";
 
 export function MeetingContent() {
   const params = useParams();
@@ -216,6 +217,8 @@ export function MeetingContent() {
       ) : (
         <LoginStatus discordId={discordId} username={username} avatarUrl={avatarUrl} />
       )}
+      <UsageGuide durationMinutes={meeting.duration_minutes} />
+
       <TimeGrid
         dates={dates}
         selectedSlots={selectedSlots}

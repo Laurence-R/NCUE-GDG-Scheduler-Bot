@@ -78,7 +78,7 @@ export async function handleModalSubmit(
     }>;
   };
 
-  // custom_id 格式: "meeting_build_modal:{roleId}"
+  // custom_id 格式: "meeting_build_modal:{roleId}:{roleName}"
   if (!data.custom_id.startsWith("meeting_build_modal:")) {
     return NextResponse.json({
       type: 4,
@@ -86,7 +86,9 @@ export async function handleModalSubmit(
     });
   }
 
-  const roleId = data.custom_id.split(":")[1];
+  const customParts = data.custom_id.split(":");
+  const roleId = customParts[1];
+  const roleName = customParts.slice(2).join(":") || null;
 
   // 解析 Modal 欄位
   const fields = data.components.flatMap((row) => row.components);
@@ -210,6 +212,7 @@ export async function handleModalSubmit(
     creator_discord_id: userId,
     creator_username: creatorUsername,
     role_id: roleId,
+    role_name: roleName,
     guild_id: guildId || null,
     channel_id: (interaction.channel_id as string) || null,
   } satisfies MeetingInsert);

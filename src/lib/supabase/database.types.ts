@@ -21,6 +21,7 @@ export type Database = {
           creator_discord_id: string;
           creator_username: string;
           role_id: string | null;
+          role_name: string | null;
           guild_id: string | null;
           channel_id: string | null;
           created_at: string;
@@ -36,6 +37,7 @@ export type Database = {
           creator_discord_id: string;
           creator_username: string;
           role_id?: string | null;
+          role_name?: string | null;
           guild_id?: string | null;
           channel_id?: string | null;
           created_at?: string;
@@ -51,6 +53,7 @@ export type Database = {
           creator_discord_id?: string;
           creator_username?: string;
           role_id?: string | null;
+          role_name?: string | null;
           guild_id?: string | null;
           channel_id?: string | null;
           updated_at?: string;

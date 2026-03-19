@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import {
   IconCalendarEvent,
@@ -16,15 +16,59 @@ import { ErrorBanner } from "@/components/ui/error-banner";
 import { AuthGuard } from "@/components/auth-guard";
 import type { Meeting } from "@/lib/supabase/database.types";
 
+/** 角色篩選標籤（value 用於比對 meeting.role_name） */
+const ROLE_TABS = [
+  { label: "全部", value: null },
+  { label: "@everyone", value: "everyone" },
+  { label: "@Lead", value: "lead" },
+  { label: "@開發組", value: "開發組" },
+  { label: "@教學組", value: "教學組" },
+  { label: "@行政組", value: "行政組" },
+] as const;
+
 export default function MeetingsPage() {
   const { meetings, loading, error, refresh: fetchMeetings } = useMeetings();
   const [search, setSearch] = useState("");
+  const [activeRole, setActiveRole] = useState<string | null>(null);
 
-  const filtered = meetings.filter(
-    (m) =>
-      m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.id.toLowerCase().includes(search.toLowerCase())
-  );
+  // 計算每個角色有多少會議（用於隱藏無會議的標籤）
+  const roleCounts = useMemo(() => {
+    const counts = new Map<string | null, number>();
+    counts.set(null, meetings.length);
+    for (const tab of ROLE_TABS) {
+      if (tab.value === null) continue;
+      counts.set(
+        tab.value,
+        meetings.filter(
+          (m) => m.role_name?.toLowerCase() === tab.value!.toLowerCase()
+        ).length
+      );
+    }
+    return counts;
+  }, [meetings]);
+
+  const filtered = useMemo(() => {
+    let list = meetings;
+
+    // 角色篩選
+    if (activeRole !== null) {
+      list = list.filter(
+        (m) => m.role_name?.toLowerCase() === activeRole.toLowerCase()
+      );
+    }
+
+    // 關鍵字搜尋
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter(
+        (m) =>
+          m.name.toLowerCase().includes(q) ||
+          m.id.toLowerCase().includes(q)
+      );
+    }
+
+    return list;
+  }, [meetings, activeRole, search]);
 
   return (
     <AuthGuard pageName="會議排程">
@@ -39,6 +83,34 @@ export default function MeetingsPage() {
           <p className={cn("text-text-muted")}>
             瀏覽所有已建立的會議排程。
           </p>
+        </div>
+
+        {/* Role filter tabs */}
+        <div className={cn("flex flex-wrap gap-2 mb-4")}>
+          {ROLE_TABS.map((tab) => {
+            const count = roleCounts.get(tab.value) ?? 0;
+            // 隱藏沒有任何會議的角色標籤（「全部」始終顯示）
+            if (tab.value !== null && count === 0) return null;
+            const isActive = activeRole === tab.value;
+            return (
+              <button
+                key={tab.label}
+                type="button"
+                onClick={() => setActiveRole(tab.value)}
+                className={cn(
+                  "px-3 py-1.5 text-xs sm:text-sm rounded-lg font-medium transition-all duration-200",
+                  isActive
+                    ? "bg-accent text-accent-foreground"
+                    : "glass-card text-text-muted hover:text-text-primary"
+                )}
+              >
+                {tab.label}
+                {tab.value !== null && (
+                  <span className={cn("ml-1.5 opacity-70")}>{count}</span>
+                )}
+              </button>
+            );
+          })}
         </div>
 
         {/* Search */}
@@ -66,7 +138,7 @@ export default function MeetingsPage() {
         ) : filtered.length === 0 ? (
           <div className={cn("glass-card p-8 text-center")}>
             <p className={cn("text-text-muted")}>
-              {search ? "找不到符合的會議。" : "目前沒有任何會議。"}
+              {search || activeRole ? "找不到符合的會議。" : "目前沒有任何會議。"}
             </p>
           </div>
         ) : (
@@ -93,6 +165,11 @@ export default function MeetingsPage() {
                           進行中
                         </span>
                       )}
+                      {meeting.role_name && (
+                        <span className={cn("px-2 py-0.5 text-[10px] font-medium rounded-full bg-accent-bg-medium text-accent border border-accent-border-subtle")}>
+                          @{meeting.role_name}
+                        </span>
+                      )}
                     </div>
                     <div className={cn("flex flex-wrap items-center gap-3 text-sm text-text-secondary")}>
                       <span className={cn("flex items-center gap-1")}>
@@ -100,7 +177,6 @@ export default function MeetingsPage() {
                         {meeting.date_range_start} ~{" "}
                         {meeting.date_range_end}
                       </span>
-                      <span className={cn("flex items-center gap-1")}><IconUsers className={cn("h-3.5 w-3.5 text-accent")} /> {meeting.creator_username}</span>
                       <span className={cn("flex items-center gap-1")}><IconUser className={cn("h-3.5 w-3.5 text-accent")} /> {meeting.creator_username}</span>
                     </div>
                   </div>
