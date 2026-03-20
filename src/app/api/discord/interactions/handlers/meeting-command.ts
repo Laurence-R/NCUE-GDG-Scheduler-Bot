@@ -1,7 +1,29 @@
 import { NextResponse } from "next/server";
 
+/** Discord REST API base URL */
+const DISCORD_API = "https://discord.com/api/v10";
+
 /** 允許發起會議的角色名稱（不區分大小寫） */
 const ALLOWED_ROLE_NAMES = ["lead", "組長"];
+
+/**
+ * 透過 Discord REST API 取得伺服器所有角色
+ */
+async function fetchGuildRoles(
+  guildId: string,
+  botToken: string
+): Promise<Record<string, string>> {
+  const res = await fetch(`${DISCORD_API}/guilds/${guildId}/roles`, {
+    headers: { Authorization: `Bot ${botToken}` },
+  });
+  if (!res.ok) return {};
+  const roles: Array<{ id: string; name: string }> = await res.json();
+  const map: Record<string, string> = {};
+  for (const r of roles) {
+    map[r.id] = r.name;
+  }
+  return map;
+}
 
 /**
  * /meeting build @身分組 → 驗證權限後回傳 Modal（type: 9）
@@ -9,7 +31,7 @@ const ALLOWED_ROLE_NAMES = ["lead", "組長"];
  * @param interaction Discord interaction payload
  * @param roleId 使用者指定的身分組 ID
  */
-export function handleMeetingCommand(
+export async function handleMeetingCommand(
   interaction: Record<string, unknown>,
   roleId: string
 ) {
@@ -20,20 +42,30 @@ export function handleMeetingCommand(
   } | undefined;
   const userRoles = member?.roles ?? [];
 
-  // 取得 guild 中所有 role 的名稱對照表
-  const guild = interaction.data as {
-    resolved?: {
-      roles?: Record<string, { name: string }>;
+  const guildId = interaction.guild_id as string | undefined;
+  const botToken = process.env.DISCORD_BOT_TOKEN;
+
+  // 取得伺服器完整角色對照表（resolved.roles 只有指令參數中提到的角色，
+  // 不含使用者身上的其他角色，因此需要向 Discord API 取得完整清單）
+  let allRoles: Record<string, string> = {};
+  if (guildId && botToken) {
+    allRoles = await fetchGuildRoles(guildId, botToken);
+  } else {
+    // Fallback: 只用 resolved（可能不完整）
+    const guild = interaction.data as {
+      resolved?: { roles?: Record<string, { name: string }> };
     };
-  };
-  const resolvedRoles = guild.resolved?.roles ?? {};
+    for (const [id, role] of Object.entries(guild.resolved?.roles ?? {})) {
+      allRoles[id] = role.name;
+    }
+  }
 
   // 被選擇的目標角色名稱
-  const targetRoleName = resolvedRoles[roleId]?.name ?? "unknown";
+  const targetRoleName = allRoles[roleId] ?? "unknown";
 
   // 檢查發起人是否擁有 ALLOWED_ROLE_NAMES 中任一角色
   const hasPermission = userRoles.some((rId) => {
-    const roleName = resolvedRoles[rId]?.name?.toLowerCase();
+    const roleName = allRoles[rId]?.toLowerCase();
     return roleName && ALLOWED_ROLE_NAMES.includes(roleName);
   });
 

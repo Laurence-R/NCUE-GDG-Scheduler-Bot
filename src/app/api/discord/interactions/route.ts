@@ -90,7 +90,7 @@ async function handleApplicationCommand(interaction: Record<string, unknown>) {
         });
       }
 
-      return handleMeetingCommand(interaction, roleId);
+      return await handleMeetingCommand(interaction, roleId);
     }
     case "dashboard":
       return await handleDashboardCommand(interaction);
